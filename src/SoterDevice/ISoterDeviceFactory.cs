@@ -16,14 +16,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 */
-using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
 namespace SoterDevice
 {
-    public class DeviceException :Exception
+    public interface ISoterDeviceFactory
     {
-        public DeviceException(string message) : base(message)
-        {
-
-        }
+        IEnumerable<ISoterDevice> Devices { get; }
+        Task StartDeviceSearchAsync();
+        Task StopDeviceSearchAsync(); 
     }
 }

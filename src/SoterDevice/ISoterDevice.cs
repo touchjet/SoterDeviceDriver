@@ -17,13 +17,18 @@
  * limitations under the License.
 */
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using SoterDevice.Contracts;
+using SoterDevice.Models;
+
 namespace SoterDevice
 {
-    public class DeviceException :Exception
+    public interface ISoterDevice
     {
-        public DeviceException(string message) : base(message)
-        {
-
-        }
+        Features Features { get; }
+        Task InitializeAsync();
+        Task<IEnumerable<CoinType>> GetCoinTable();
+        Task<string> GetAddressAsync(IAddressPath addressPath, bool isPublicKey, bool display, AddressType addressType, InputScriptType inputScriptType, string coinName);
     }
 }

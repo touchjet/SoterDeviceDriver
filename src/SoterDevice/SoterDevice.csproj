@@ -17,10 +17,11 @@
   <ItemGroup>
     <PackageReference Include="protobuf-net" Version="2.4.0" />
     <PackageReference Include="Serilog" Version="2.7.1" />
-    <PackageReference Include="Touchjet.BinaryUtils" Version="1.0.4" />
+    <PackageReference Include="Touchjet.BinaryUtils" Version="1.0.5" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="SoterDevice.Hid\obj\Debug\netstandard2.0\SoterDevice.Hid.AssemblyInfo.cs" />
+    <Compile Remove="ByteBuffer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="SoterDevice.Hid\obj\SoterDevice.Hid.csproj.nuget.cache" />
