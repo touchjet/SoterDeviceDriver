@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core" ios:Page.UseSafeArea="true" xmlns:local="clr-namespace:SoterDeviceBleTest" x:Class="SoterDeviceBleTest.MainPage">
+    <StackLayout>
+        <!-- Place new controls here -->
+        <Button Text="Scan For Soter Devices" Clicked="ButtonScan_ClickedAsync" />
+    </StackLayout>
+</ContentPage>
