@@ -1,0 +1,3 @@
+[submodule "xamarin-bluetooth-le"]
+	path = xamarin-bluetooth-le
+	url = https://github.com/touchjet/xamarin-bluetooth-le.git
