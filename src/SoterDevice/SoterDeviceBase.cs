@@ -48,7 +48,10 @@ namespace SoterDevice
         protected int _invalidRxChunksCounter;
 
         public bool IsInitialized => Features != null;
+
         public Features Features { get; private set; }
+
+        public string Name { get; protected set; }
 
         public ICoinUtility CoinUtility { get; set; }
 

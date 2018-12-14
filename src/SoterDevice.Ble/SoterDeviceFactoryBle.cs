@@ -60,7 +60,7 @@ namespace SoterDevice.Ble
                         Console.WriteLine($"    Service {service.Id}({service.Name})");
                         if (service.Id == new Guid(SoterDeviceBle.SERVICE_GUID_STR))
                         {
-                            var _soterDevice = new SoterDeviceBle(a.Device);
+                            var _soterDevice = new SoterDeviceBle(a.Device, a.Device.Name);
                             await _soterDevice.InitializeAsync();
                             Devices.Add(_soterDevice);
                         }

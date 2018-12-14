@@ -26,6 +26,7 @@ namespace SoterDevice
 {
     public interface ISoterDevice
     {
+        string Name { get; }
         Features Features { get; }
         Task InitializeAsync();
         Task<IEnumerable<CoinType>> GetCoinTable();

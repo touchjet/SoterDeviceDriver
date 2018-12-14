@@ -18,7 +18,6 @@
 */
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -48,10 +47,10 @@ namespace SoterDevice.Ble
 
         ConcurrentQueue<byte[]> _rxBufferQueue = new ConcurrentQueue<byte[]>();
 
-        public SoterDeviceBle(IDevice device)
+        public SoterDeviceBle(IDevice device, string name)
         {
             _device = device;
-
+            Name = name;
             if (_device.State != DeviceState.Connected)
             {
                 throw new Exception("BLE Device is not connected!");

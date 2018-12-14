@@ -58,15 +58,14 @@ namespace SoterDevice.Hid
 
                 foreach (var device in hidDeviceList)
                 {
-                    Log.Information($"Found HID Device VID:{device.VendorID} PID:{device.ProductID}");
+                    Log.Information($"Found HID Device VID:{device.VendorID} PID:{device.ProductID}  {device.GetProductName()}");
                     if ((device.VendorID == SoterDeviceHid.VID) && (device.ProductID == SoterDeviceHid.PID))
                     {
                         if (device.GetReportDescriptor().DeviceItems.Any(item => item.Usages.GetAllValues().Any(usage => usage == SoterDeviceHid.HID_USAGE)))
                         {
                             try
                             {
-                                var _soterDevice = new SoterDeviceHid(device);
-                                await _soterDevice.InitializeAsync();
+                                var _soterDevice = new SoterDeviceHid(device, device.GetProductName());
                                 Devices.Add(_soterDevice);
                             } catch (Exception ex)
                             {
