@@ -6,5 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SoterDevice\SoterDevice.csproj" />
+    <ProjectReference Include="..\..\xamarin-bluetooth-le\Source\Plugin.BLE\Plugin.BLE.csproj" />
+    <ProjectReference Include="..\..\xamarin-bluetooth-le\Source\Plugin.BLE.Abstractions\Plugin.BLE.Abstractions.csproj" />
   </ItemGroup>
 </Project>

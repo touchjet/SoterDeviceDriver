@@ -18,7 +18,9 @@
 */
 using System;
 using System.Collections.ObjectModel;
+using System.Threading;
 using System.Threading.Tasks;
+using Plugin.BLE;
 
 namespace SoterDevice.Ble
 {
@@ -42,14 +44,42 @@ namespace SoterDevice.Ble
 
         public ObservableCollection<ISoterDevice> Devices { get; private set; }
 
-        public Task StartDeviceSearchAsync()
+        CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+
+        public async Task StartDeviceSearchAsync()
         {
-            throw new NotImplementedException();
+            var adapter = CrossBluetoothLE.Current.Adapter;
+            adapter.DeviceDiscovered += async (s, a) =>
+            {
+                try
+                {
+                    await adapter.ConnectToDeviceAsync(a.Device);
+                    Console.WriteLine($"Device {a.Device.Id}({a.Device.Name})  {a.Device.State}");
+                    foreach (var service in await a.Device.GetServicesAsync())
+                    {
+                        Console.WriteLine($"    Service {service.Id}({service.Name})");
+                        if (service.Id == new Guid(SoterDeviceBle.SERVICE_GUID_STR))
+                        {
+                            var _soterDevice = new SoterDeviceBle(a.Device);
+                            await _soterDevice.InitializeAsync();
+                            Devices.Add(_soterDevice);
+                        }
+                    }
+                    await adapter.DisconnectDeviceAsync(a.Device);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
+            };
+            await adapter.StartScanningForDevicesAsync(null, null, false, cancellationTokenSource.Token);
         }
 
-        public Task StopDeviceSearchAsync()
+        public async Task StopDeviceSearchAsync()
         {
-            throw new NotImplementedException();
+            cancellationTokenSource.Cancel();
+            var adapter = CrossBluetoothLE.Current.Adapter;
+            await adapter.StopScanningForDevicesAsync();
         }
     }
 }

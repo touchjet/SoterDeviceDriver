@@ -43,6 +43,10 @@ namespace SoterDevice
 
         protected abstract Task<object> ReadAsync();
 
+        protected Type MessageTypeType => typeof(MessageType);
+
+        protected int _invalidRxChunksCounter;
+
         public bool IsInitialized => Features != null;
         public Features Features { get; private set; }
 
@@ -273,7 +277,7 @@ namespace SoterDevice
         public async Task<IEnumerable<CoinType>> GetCoinTable()
         {
             var coinInfos = new List<CoinType>();
-            var coinTable = await SendMessageAsync<CoinTable, GetCoinTable>(new GetCoinTable() );
+            var coinTable = await SendMessageAsync<CoinTable, GetCoinTable>(new GetCoinTable());
 
             for (uint i = 0; i < coinTable.NumCoins; i++)
             {

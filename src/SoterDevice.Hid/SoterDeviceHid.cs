@@ -40,9 +40,6 @@ namespace SoterDevice.Hid
         public const uint PID = 1;
         public const uint HID_USAGE = 0xFF000001;
 
-        int _InvalidChunksCounter;
-        Type MessageTypeType => typeof(MessageType);
-
         public SoterDeviceHid(HidDevice hidDevice)
         {
             if (!hidDevice.TryOpen(out _hidStream))
@@ -128,7 +125,7 @@ namespace SoterDevice.Hid
 
             remainingDataLength -= length;
 
-            _InvalidChunksCounter = 0;
+            _invalidRxChunksCounter = 0;
 
             while (remainingDataLength > 0)
             {
@@ -144,7 +141,7 @@ namespace SoterDevice.Hid
 
                 if (readBuffer[REPORT_ID_SIZE] != (byte)'?')
                 {
-                    if (_InvalidChunksCounter++ > 5)
+                    if (_invalidRxChunksCounter++ > 5)
                     {
                         throw new Exception("messageRead: too many invalid chunks (2)");
                     }
