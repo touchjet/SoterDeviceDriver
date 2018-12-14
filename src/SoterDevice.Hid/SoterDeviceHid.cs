@@ -1,4 +1,22 @@
-﻿using System;
+﻿/*
+ * Copyright (C) 2018 Touchjet Limited.
+ * 
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+*/
+using System;
 using System.Threading.Tasks;
 using Serilog;
 using SoterDevice.Contracts;
@@ -25,7 +43,7 @@ namespace SoterDevice.Hid
         int _InvalidChunksCounter;
         Type MessageTypeType => typeof(MessageType);
 
-        public SoterDeviceHid(EnterPinArgs enterPinCallback, HidDevice hidDevice) : base(enterPinCallback)
+        public SoterDeviceHid(HidDevice hidDevice)
         {
             if (!hidDevice.TryOpen(out _hidStream))
             {
@@ -55,12 +73,12 @@ namespace SoterDevice.Hid
             for (var i = 0; i < chunks; i++)
             {
                 var range = new byte[PACKET_SIZE + REPORT_ID_SIZE];
-                for (int j=0;j<REPORT_ID_SIZE;j++)
+                for (int j = 0; j < REPORT_ID_SIZE; j++)
                 {
                     range[j] = 0;
                 }
                 range[REPORT_ID_SIZE] = (byte)'?';
-                Buffer.BlockCopy(data.Value, i * PAYLOAD_SIZE, range, 1+ REPORT_ID_SIZE, PAYLOAD_SIZE);
+                Buffer.BlockCopy(data.Value, i * PAYLOAD_SIZE, range, 1 + REPORT_ID_SIZE, PAYLOAD_SIZE);
                 Log.Verbose($"Write to HID: {range.ToHex()}");
                 if (!_hidStream.CanWrite)
                 {
@@ -100,12 +118,12 @@ namespace SoterDevice.Hid
                                       + ((readBuffer[7 + REPORT_ID_SIZE] & 0xFF) << 8)
                                       + (readBuffer[8 + REPORT_ID_SIZE] & 0xFF);
 
-            var length = Math.Min(readBuffer.Length - (FIRST_CHUNK_START_INDEX+ REPORT_ID_SIZE), remainingDataLength);
+            var length = Math.Min(readBuffer.Length - (FIRST_CHUNK_START_INDEX + REPORT_ID_SIZE), remainingDataLength);
 
             int dataOffset = 0;
             var allData = new byte[remainingDataLength];
 
-            Buffer.BlockCopy(readBuffer, FIRST_CHUNK_START_INDEX+ REPORT_ID_SIZE, allData, dataOffset, length);
+            Buffer.BlockCopy(readBuffer, FIRST_CHUNK_START_INDEX + REPORT_ID_SIZE, allData, dataOffset, length);
             dataOffset += length;
 
             remainingDataLength -= length;
@@ -132,7 +150,7 @@ namespace SoterDevice.Hid
                     }
                 }
 
-                Buffer.BlockCopy(readBuffer, 1+ REPORT_ID_SIZE, allData, dataOffset, length);
+                Buffer.BlockCopy(readBuffer, 1 + REPORT_ID_SIZE, allData, dataOffset, length);
                 dataOffset += length;
 
                 if (remainingDataLength == length)

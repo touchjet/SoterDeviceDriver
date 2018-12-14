@@ -16,15 +16,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 */
+using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 
-namespace SoterDevice
+namespace SoterDevice.Ble
 {
-    public interface ISoterDeviceFactory
+    public class SoterDeviceFactoryBle : ISoterDeviceFactory
     {
-        ObservableCollection<ISoterDevice> Devices { get; }
-        Task StartDeviceSearchAsync();
-        Task StopDeviceSearchAsync(); 
+        private static SoterDeviceFactoryBle _instance;
+
+        public static SoterDeviceFactoryBle Instance
+        {
+            get
+            {
+                if (_instance == null) { _instance = new SoterDeviceFactoryBle(); }
+                return _instance;
+            }
+        }
+
+        public SoterDeviceFactoryBle()
+        {
+            Devices = new ObservableCollection<ISoterDevice>();
+        }
+
+        public ObservableCollection<ISoterDevice> Devices { get; private set; }
+
+        public Task StartDeviceSearchAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task StopDeviceSearchAsync()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

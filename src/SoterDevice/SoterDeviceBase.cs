@@ -32,7 +32,7 @@ namespace SoterDevice
 {
     public abstract class SoterDeviceBase : ISoterDevice
     {
-        EnterPinArgs _enterPinCallback;
+        public EnterPinArgs EnterPinCallback;
 
         SemaphoreSlim _Lock = new SemaphoreSlim(1, 1);
         static readonly Dictionary<string, Type> _ContractsByName = new Dictionary<string, Type>();
@@ -47,11 +47,6 @@ namespace SoterDevice
         public Features Features { get; private set; }
 
         public ICoinUtility CoinUtility { get; set; }
-
-        protected SoterDeviceBase(EnterPinArgs enterPinCallback)
-        {
-            _enterPinCallback = enterPinCallback;
-        }
 
         public Task<string> GetAddressAsync(IAddressPath addressPath, bool isPublicKey, bool display)
         {
@@ -125,7 +120,7 @@ namespace SoterDevice
                 {
                     if (IsPinMatrixRequest(response))
                     {
-                        var pin = await _enterPinCallback.Invoke();
+                        var pin = await EnterPinCallback.Invoke();
                         response = await PinMatrixAckAsync(pin);
                         if (response is TReadMessage readMessage)
                         {

@@ -47,21 +47,12 @@ namespace SoterDevice.Hid.Tests
                 return;
             }
 
-            var hidDeviceList = DeviceList.Local.GetHidDevices().ToArray();
+            await SoterDeviceFactoryHid.Instance.StartDeviceSearchAsync();
+            await Task.Delay(3000);
+            await SoterDeviceFactoryHid.Instance.StopDeviceSearchAsync();
 
-            foreach (var device in hidDeviceList)
-            {
-                Log.Information($"Found HID Device VID:{device.VendorID} PID:{device.ProductID}");
-                if ((device.VendorID == SoterDeviceHid.VID) && (device.ProductID == SoterDeviceHid.PID))
-                {
-                    if (device.GetReportDescriptor().DeviceItems.Any(item => item.Usages.GetAllValues().Any(usage => usage == SoterDeviceHid.HID_USAGE)))
-                    {
-                        _soterDevice = new SoterDeviceHid(enterPinCallback: HandleEnterPinArgs, hidDevice: device);
-                    }
-                }
-            }
-
-            await _soterDevice.InitializeAsync();
+            _soterDevice = (SoterDeviceHid)SoterDeviceFactoryHid.Instance.Devices.FirstOrDefault();
+            _soterDevice.EnterPinCallback = HandleEnterPinArgs;
             var coinTable = await _soterDevice.GetCoinTable();
             _soterDevice.CoinUtility = new SoterCoinUtility(coinTable);
         }
