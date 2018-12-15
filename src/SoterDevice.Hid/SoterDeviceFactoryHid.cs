@@ -51,7 +51,7 @@ namespace SoterDevice.Hid
         public Task StartDeviceSearchAsync()
         {
             return Task.Run(
-            async () =>
+            () =>
             {
                 Devices.Clear();
                 var hidDeviceList = DeviceList.Local.GetHidDevices().ToArray();
