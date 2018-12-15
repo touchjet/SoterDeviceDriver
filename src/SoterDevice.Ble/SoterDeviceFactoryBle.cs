@@ -21,6 +21,7 @@ using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
 using Plugin.BLE;
+using Serilog;
 
 namespace SoterDevice.Ble
 {
@@ -54,10 +55,10 @@ namespace SoterDevice.Ble
                 try
                 {
                     await adapter.ConnectToDeviceAsync(a.Device);
-                    Console.WriteLine($"Device {a.Device.Id}({a.Device.Name})  {a.Device.State}");
+                    Log.Verbose($"Device {a.Device.Id}({a.Device.Name})  {a.Device.State}");
                     foreach (var service in await a.Device.GetServicesAsync())
                     {
-                        Console.WriteLine($"    Service {service.Id}({service.Name})");
+                        Log.Verbose($"    Service {service.Id}({service.Name})");
                         if (service.Id == new Guid(SoterDeviceBle.SERVICE_GUID_STR))
                         {
                             var _soterDevice = new SoterDeviceBle(a.Device, a.Device.Name);
@@ -69,7 +70,7 @@ namespace SoterDevice.Ble
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex);
+                    Log.Error(ex.ToString());
                 }
             };
             await adapter.StartScanningForDevicesAsync(null, null, false, cancellationTokenSource.Token);
