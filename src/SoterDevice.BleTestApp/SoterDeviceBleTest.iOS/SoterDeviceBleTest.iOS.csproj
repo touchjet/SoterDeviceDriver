@@ -153,6 +153,9 @@
     <PackageReference Include="System.Reflection.Emit" Version="4.3.0">
 	    <ExcludeAssets>all</ExcludeAssets>
     </PackageReference>
+    <PackageReference Include="Serilog.Sinks.Xamarin">
+      <Version>0.1.29</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SoterDeviceBleTest\SoterDeviceBleTest.csproj">

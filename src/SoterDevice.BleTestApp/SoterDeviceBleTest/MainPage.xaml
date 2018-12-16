@@ -3,5 +3,12 @@
     <StackLayout>
         <!-- Place new controls here -->
         <Button Text="Scan For Soter Devices" Clicked="ButtonScan_ClickedAsync" />
+        <ListView x:Name="ListViewDevice">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <TextCell Text="{Binding Name}" />
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
     </StackLayout>
 </ContentPage>

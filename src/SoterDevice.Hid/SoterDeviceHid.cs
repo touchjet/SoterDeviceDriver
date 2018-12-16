@@ -52,7 +52,7 @@ namespace SoterDevice.Hid
 
         protected override async Task WriteAsync(object msg)
         {
-            Log.Debug($"Write: {msg}");
+            Log.Verbose($"Write: {msg}");
 
             var byteArray = Serialize(msg);
 
@@ -93,7 +93,7 @@ namespace SoterDevice.Hid
             var readBuffer = new byte[PACKET_SIZE + REPORT_ID_SIZE];
 
             await _hidStream.ReadAsync(readBuffer, 0, PACKET_SIZE + REPORT_ID_SIZE);
-            Log.Debug($"Read from HID: {readBuffer.ToHex()}");
+            Log.Verbose($"Read from HID: {readBuffer.ToHex()}");
 
             if (!readBuffer.Skip(REPORT_ID_SIZE).Take(3).SequenceEqual(Encoding.ASCII.GetBytes("?##")))
             {
@@ -159,7 +159,7 @@ namespace SoterDevice.Hid
                 remainingDataLength -= length;
             }
 
-            Log.Debug($"Message type {messageType} ({allData.Length} bytes): {allData.ToHex()}");
+            Log.Verbose($"Message type {messageType} ({allData.Length} bytes): {allData.ToHex()}");
             var msg = Deserialize(messageType, allData);
 
             return msg;

@@ -22,6 +22,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using ProtoBuf;
 using Serilog;
 using SoterDevice.Contracts;
@@ -116,12 +117,14 @@ namespace SoterDevice
         public async Task<TReadMessage> SendMessageAsync<TReadMessage, TWriteMessage>(TWriteMessage message)
         {
             ValidateInitialization(message);
+            Log.Debug($"Message --> {typeof(TWriteMessage).ToString().Substring(22)} {JsonConvert.SerializeObject(message)}");
 
             await _Lock.WaitAsync();
 
             try
             {
                 var response = await SendMessageAsync(message);
+                Log.Debug($"Message --> {typeof(TReadMessage).ToString().Substring(22)} {JsonConvert.SerializeObject(response)}");
 
                 for (var i = 0; i < 10; i++)
                 {

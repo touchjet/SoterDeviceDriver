@@ -49,20 +49,20 @@ namespace SoterDevice.Ble
 
         public async Task StartDeviceSearchAsync()
         {
+            Log.Information("Start device search.");
             var adapter = CrossBluetoothLE.Current.Adapter;
             adapter.DeviceDiscovered += async (s, a) =>
             {
                 try
                 {
                     await adapter.ConnectToDeviceAsync(a.Device);
-                    Log.Verbose($"Device {a.Device.Id}({a.Device.Name})  {a.Device.State}");
+                    Log.Debug($"Device {a.Device.Id}({a.Device.Name})  {a.Device.State}");
                     foreach (var service in await a.Device.GetServicesAsync())
                     {
-                        Log.Verbose($"    Service {service.Id}({service.Name})");
+                        Log.Debug($"    Service {service.Id}({service.Name})");
                         if (service.Id == new Guid(SoterDeviceBle.SERVICE_GUID_STR))
                         {
                             var _soterDevice = new SoterDeviceBle(a.Device, a.Device.Name);
-                            await _soterDevice.InitializeAsync();
                             Devices.Add(_soterDevice);
                         }
                     }

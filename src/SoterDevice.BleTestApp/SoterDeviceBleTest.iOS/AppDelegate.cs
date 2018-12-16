@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Foundation;
+using Serilog;
 using UIKit;
 
 namespace SoterDeviceBleTest.iOS
@@ -23,6 +24,9 @@ namespace SoterDeviceBleTest.iOS
         public override bool FinishedLaunching(UIApplication app, NSDictionary options)
         {
             Xamarin.Calabash.Start();
+            Log.Logger = new LoggerConfiguration()
+                            .WriteTo.NSLog()
+                            .CreateLogger();
             global::Xamarin.Forms.Forms.Init();
             LoadApplication(new App());
 
