@@ -56,12 +56,13 @@ namespace SoterDevice.Ble
                 try
                 {
                     await adapter.ConnectToDeviceAsync(a.Device);
-                    Log.Debug($"Device {a.Device.Id}({a.Device.Name})  {a.Device.State}");
+                    Log.Verbose($"Device {a.Device.Id}({a.Device.Name})  {a.Device.State}");
                     foreach (var service in await a.Device.GetServicesAsync())
                     {
-                        Log.Debug($"    Service {service.Id}({service.Name})");
+                        Log.Verbose($"    Service {service.Id}({service.Name})");
                         if (service.Id == new Guid(SoterDeviceBle.SERVICE_GUID_STR))
                         {
+                            Log.Information($"Found device  {a.Device.Id} -- {a.Device.Name}");
                             var _soterDevice = new SoterDeviceBle(a.Device, a.Device.Name);
                             Devices.Add(_soterDevice);
                         }

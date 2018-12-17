@@ -23,6 +23,7 @@ namespace SoterDeviceBleTest
             foreach(var device in SoterDeviceFactoryBle.Instance.Devices)
             {
                 Console.WriteLine($"Found device: {device.Name}");
+                Device.BeginInvokeOnMainThread(async () => await device.InitializeAsync());
             }
         }
     }

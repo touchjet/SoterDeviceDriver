@@ -25,6 +25,7 @@ namespace SoterDeviceBleTest.iOS
         {
             Xamarin.Calabash.Start();
             Log.Logger = new LoggerConfiguration()
+                            .MinimumLevel.Debug()
                             .WriteTo.NSLog()
                             .CreateLogger();
             global::Xamarin.Forms.Forms.Init();

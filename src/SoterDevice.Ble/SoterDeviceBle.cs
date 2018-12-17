@@ -21,6 +21,7 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Plugin.BLE;
 using Plugin.BLE.Abstractions;
 using Plugin.BLE.Abstractions.Contracts;
 using Plugin.BLE.Abstractions.EventArgs;
@@ -59,6 +60,10 @@ namespace SoterDevice.Ble
 
         async Task GetCharacteristicsAsync()
         {
+            if (_device.State != DeviceState.Connected)
+            {
+                await CrossBluetoothLE.Current.Adapter.ConnectToDeviceAsync(_device);
+            }
             if (_service != null) return;
             _service = await _device.GetServiceAsync(new Guid(SERVICE_GUID_STR));
             if (_service == null)
@@ -66,7 +71,15 @@ namespace SoterDevice.Ble
                 throw new Exception("Can not find the correct BLE service!!");
             }
             _char_device_rx = await _service.GetCharacteristicAsync(new Guid(DEVICE_RX_GUID_STR));
+            if (!_char_device_rx.CanWrite)
+            {
+                throw new Exception("Device RX Characteristic incorrect!");
+            }
             _char_device_tx = await _service.GetCharacteristicAsync(new Guid(DEVICE_TX_GUID_STR));
+            if (!_char_device_tx.CanUpdate)
+            {
+                throw new Exception("Device TX Characteristic incorrect!");
+            }
             _char_device_tx.ValueUpdated += DeviceTxValueUpdated;
             await _char_device_tx.StartUpdatesAsync();
         }
@@ -80,9 +93,6 @@ namespace SoterDevice.Ble
         protected override async Task WriteAsync(object msg)
         {
             await GetCharacteristicsAsync();
-
-            Log.Debug($"Write: {msg}");
-
             var byteArray = Serialize(msg);
 
             var msgSize = (UInt32)byteArray.Length;
@@ -102,13 +112,7 @@ namespace SoterDevice.Ble
                 var range = new byte[PACKET_SIZE];
                 range[0] = (byte)'?';
                 Buffer.BlockCopy(data.Value, i * PAYLOAD_SIZE, range, 1, PAYLOAD_SIZE);
-                Log.Verbose($"Write to HID: {range.ToHex()}");
-
-
-                if (!_char_device_rx.CanWrite)
-                {
-                    throw new Exception("Can't write to HID Stream!");
-                }
+                Log.Verbose($"Write to BLE: {range.ToHex()}");
                 await _char_device_rx.WriteAsync(range);
             }
 
@@ -140,7 +144,7 @@ namespace SoterDevice.Ble
             byte[] readBuffer;
 
             readBuffer = await GetRxBufferData();
-            Log.Debug($"Read from HID: {readBuffer.ToHex()}");
+            Log.Verbose($"Read from HID: {readBuffer.ToHex()}");
 
             if (!readBuffer.Take(3).SequenceEqual(Encoding.ASCII.GetBytes("?##")))
             {
@@ -200,8 +204,6 @@ namespace SoterDevice.Ble
 
                 remainingDataLength -= length;
             }
-
-            Log.Debug($"Message type {messageType} ({allData.Length} bytes): {allData.ToHex()}");
             var msg = Deserialize(messageType, allData);
 
             return msg;

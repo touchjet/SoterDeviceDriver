@@ -52,8 +52,6 @@ namespace SoterDevice.Hid
 
         protected override async Task WriteAsync(object msg)
         {
-            Log.Verbose($"Write: {msg}");
-
             var byteArray = Serialize(msg);
 
             var msgSize = (UInt32)byteArray.Length;
@@ -158,8 +156,6 @@ namespace SoterDevice.Hid
 
                 remainingDataLength -= length;
             }
-
-            Log.Verbose($"Message type {messageType} ({allData.Length} bytes): {allData.ToHex()}");
             var msg = Deserialize(messageType, allData);
 
             return msg;
