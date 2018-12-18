@@ -136,7 +136,7 @@ namespace SoterDevice.Hid
                     continue;
                 }
 
-                length = Math.Min(readBuffer.Length - 1, remainingDataLength);
+                length = Math.Min(readBuffer.Length - 1- REPORT_ID_SIZE, remainingDataLength);
 
                 if (readBuffer[REPORT_ID_SIZE] != (byte)'?')
                 {
