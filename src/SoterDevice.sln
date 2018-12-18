@@ -35,6 +35,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Keepkey", "Keepkey", "{CFA6
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KkUsbLogParser", "Keepkey\KkUsbLogParser\KkUsbLogParser.csproj", "{5E284EA8-1202-400F-B4D9-92EDFB31067B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoterDevice.Hid.Console", "SoterDevice.Hid.Console\SoterDevice.Hid.Console.csproj", "{53FC1C62-3A9B-4E8F-B445-C1363BD290A0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -271,6 +273,22 @@ Global
 		{5E284EA8-1202-400F-B4D9-92EDFB31067B}.Ad-Hoc|iPhone.Build.0 = Release|Any CPU
 		{5E284EA8-1202-400F-B4D9-92EDFB31067B}.AppStore|iPhone.ActiveCfg = Release|Any CPU
 		{5E284EA8-1202-400F-B4D9-92EDFB31067B}.AppStore|iPhone.Build.0 = Release|Any CPU
+		{53FC1C62-3A9B-4E8F-B445-C1363BD290A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53FC1C62-3A9B-4E8F-B445-C1363BD290A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53FC1C62-3A9B-4E8F-B445-C1363BD290A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53FC1C62-3A9B-4E8F-B445-C1363BD290A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{53FC1C62-3A9B-4E8F-B445-C1363BD290A0}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{53FC1C62-3A9B-4E8F-B445-C1363BD290A0}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{53FC1C62-3A9B-4E8F-B445-C1363BD290A0}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{53FC1C62-3A9B-4E8F-B445-C1363BD290A0}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{53FC1C62-3A9B-4E8F-B445-C1363BD290A0}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{53FC1C62-3A9B-4E8F-B445-C1363BD290A0}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{53FC1C62-3A9B-4E8F-B445-C1363BD290A0}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{53FC1C62-3A9B-4E8F-B445-C1363BD290A0}.Release|iPhone.Build.0 = Release|Any CPU
+		{53FC1C62-3A9B-4E8F-B445-C1363BD290A0}.Ad-Hoc|iPhone.ActiveCfg = Release|Any CPU
+		{53FC1C62-3A9B-4E8F-B445-C1363BD290A0}.Ad-Hoc|iPhone.Build.0 = Release|Any CPU
+		{53FC1C62-3A9B-4E8F-B445-C1363BD290A0}.AppStore|iPhone.ActiveCfg = Release|Any CPU
+		{53FC1C62-3A9B-4E8F-B445-C1363BD290A0}.AppStore|iPhone.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{163A5DBF-F2F0-41B3-9DDB-69D2D6FCEAFD} = {AF162EA7-D349-4C01-AF65-9204CA1F8252}
