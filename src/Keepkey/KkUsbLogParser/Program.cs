@@ -40,11 +40,18 @@ namespace KkUsbLogParser
             bool isHeader = true;
             bool isOutput = true;
             string logFileName = args.Length >= 1 ? args[0] : $"/Users/Zhen/Documents/Keepkey_Init.txt";
-            var logLines = File.ReadAllLines(logFileName).Skip(26).Select(line => line.Replace(" ", "")).ToArray();
+            var logLines = File.ReadAllLines(logFileName).Select(line => line.Replace(" ", "")).ToList();
+
+            while(!logLines[0].Contains("---"))
+            {
+                logLines.RemoveAt(0);
+            }
+            logLines.RemoveAt(0);
+
             ByteBuffer buffer = null;
             byte messageId = 0;
             uint messageLength = 0;
-            uint lineIndex = 0;
+            int lineIndex = 0;
 
             var setting = new JsonSerializerSettings { Converters = { new ByteArrayHexConverter() } };
 
@@ -156,7 +163,7 @@ namespace KkUsbLogParser
 
         private readonly string _separator;
 
-        public ByteArrayHexConverter(string separator = ",") => _separator = separator;
+        public ByteArrayHexConverter(string separator = "") => _separator = separator;
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
