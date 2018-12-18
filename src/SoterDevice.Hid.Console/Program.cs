@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Serilog;
 
-namespace SoterDevice.Hid.Console
+namespace SoterDevice.Hid
 {
     class Program
     {
@@ -26,11 +26,17 @@ namespace SoterDevice.Hid.Console
             _soterDevice.EnterPinCallback = _soterDevice_EnterPinCallback;;
             await _soterDevice.InitializeAsync();
             var coinTable = await _soterDevice.GetCoinTable();
+            await _soterDevice.ResetDeviceAsync("Digbig Wallet");
+
         }
 
         static Task<string> _soterDevice_EnterPinCallback()
         {
-            var passStr = System.Console.ReadLine();
+            Console.WriteLine("Enter Pin Number:");
+            Console.WriteLine("    7    8    9");
+            Console.WriteLine("    4    5    6");
+            Console.WriteLine("    1    2    3");
+            var passStr = Console.ReadLine();
             return Task.FromResult(passStr);
         }
 

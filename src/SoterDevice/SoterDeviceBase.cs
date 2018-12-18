@@ -299,5 +299,10 @@ namespace SoterDevice
             }
             return coinInfos;
         }
+
+        public async Task ResetDeviceAsync(string deviceName, uint strength = 128, string language="english")
+        {
+            var entropyRequest = await SendMessageAsync<EntropyRequest, ResetDevice>(new ResetDevice { DisplayRandom=false,Strength=strength, PassphraseProtection=false, PinProtection=true, Language=language, Label=deviceName});
+        }
     }
 }
