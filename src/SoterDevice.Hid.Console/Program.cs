@@ -21,7 +21,10 @@ namespace SoterDevice.Hid
             await SoterDeviceFactoryHid.Instance.StartDeviceSearchAsync();
             await Task.Delay(3000);
             await SoterDeviceFactoryHid.Instance.StopDeviceSearchAsync();
-
+            if (SoterDeviceFactoryHid.Instance.Devices.Count==0)
+            {
+                throw new Exception("Do Soter Wallet device detected!");
+            }
             var _soterDevice = (SoterDeviceHid)SoterDeviceFactoryHid.Instance.Devices.FirstOrDefault();
             _soterDevice.EnterPinCallback = _soterDevice_EnterPinCallback;;
             await _soterDevice.InitializeAsync();
