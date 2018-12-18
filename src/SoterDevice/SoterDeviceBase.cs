@@ -285,13 +285,18 @@ namespace SoterDevice
             var coinInfos = new List<CoinType>();
             var coinTable = await SendMessageAsync<CoinTable, GetCoinTable>(new GetCoinTable());
 
-            for (uint i = 0; i < coinTable.NumCoins; i++)
+            uint coinIndex = 0;
+            uint numOfCoins = coinTable.NumCoins;
+            uint chunkSize = coinTable.ChunkSize;
+            while (coinIndex <numOfCoins)
             {
-                coinTable = await SendMessageAsync<CoinTable, GetCoinTable>(new GetCoinTable { Start = i, End = i + 1 });
-                var coinType = coinTable.Tables.First();
-                coinInfos.Add(coinType);
+                coinTable = await SendMessageAsync<CoinTable, GetCoinTable>(new GetCoinTable { Start = coinIndex, End = Math.Min(coinIndex + chunkSize, coinTable.NumCoins - 1) });
+                foreach (var coinType in coinTable.Tables)
+                {
+                    coinInfos.Add(coinType);
+                }
+                coinIndex += chunkSize;
             }
-
             return coinInfos;
         }
     }
