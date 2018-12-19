@@ -27,6 +27,7 @@ using ProtoBuf;
 using Serilog;
 using SoterDevice.Contracts;
 using SoterDevice.Models;
+using SoterDevice.Utilities;
 using Touchjet.BinaryUtils;
 
 namespace SoterDevice
@@ -117,14 +118,15 @@ namespace SoterDevice
         public async Task<TReadMessage> SendMessageAsync<TReadMessage, TWriteMessage>(TWriteMessage message)
         {
             ValidateInitialization(message);
-            Log.Debug($"Message --> {typeof(TWriteMessage).ToString().Substring(22)} {JsonConvert.SerializeObject(message)}");
+            var jsonSerializerSetting = new JsonSerializerSettings { Converters = { new JsonByteArrayHexConverter() } };
+            Log.Debug($"Message --> {typeof(TWriteMessage).ToString().Substring(22)} {JsonConvert.SerializeObject(message, jsonSerializerSetting)}");
 
             await _Lock.WaitAsync();
 
             try
             {
                 var response = await SendMessageAsync(message);
-                Log.Debug($"Message --> {typeof(TReadMessage).ToString().Substring(22)} {JsonConvert.SerializeObject(response)}");
+                Log.Debug($"Message --> {typeof(TReadMessage).ToString().Substring(22)} {JsonConvert.SerializeObject(response, jsonSerializerSetting)}");
 
                 for (var i = 0; i < 10; i++)
                 {
