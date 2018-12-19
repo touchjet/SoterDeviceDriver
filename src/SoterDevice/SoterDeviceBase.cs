@@ -119,14 +119,14 @@ namespace SoterDevice
         {
             ValidateInitialization(message);
             var jsonSerializerSetting = new JsonSerializerSettings { Converters = { new JsonByteArrayHexConverter() } };
-            Log.Debug($"Message --> {typeof(TWriteMessage).ToString().Substring(22)} {JsonConvert.SerializeObject(message, jsonSerializerSetting)}");
+            Log.Debug($"Message --> {message.GetType().ToString().Substring(22)} {JsonConvert.SerializeObject(message, jsonSerializerSetting)}");
 
             await _Lock.WaitAsync();
 
             try
             {
                 var response = await SendMessageAsync(message);
-                Log.Debug($"Message <-- {typeof(TReadMessage).ToString().Substring(22)} {JsonConvert.SerializeObject(response, jsonSerializerSetting)}");
+                Log.Debug($"Message <-- {response.GetType().ToString().Substring(22)} {JsonConvert.SerializeObject(response, jsonSerializerSetting)}");
 
                 for (var i = 0; i < 10; i++)
                 {
@@ -278,7 +278,7 @@ namespace SoterDevice
 
             if (Features == null)
             {
-                throw new Exception("Error initializing KeepKey. Features were not retrieved");
+                throw new DeviceException("Error initializing Soter Wallet. Features were not retrieved");
             }
         }
 
@@ -320,6 +320,16 @@ namespace SoterDevice
         public async Task ResetDeviceAsync(string deviceName, uint mnemonicWordCount = 12, string language = "english")
         {
             var entropyRequest = await SendMessageAsync<EntropyRequest, ResetDevice>(new ResetDevice { DisplayRandom = false, Strength = MnemonicWordCountToKeyStrength(mnemonicWordCount), PassphraseProtection = false, PinProtection = true, Language = language, Label = deviceName });
+        }
+
+        public async Task WipeDeviceAsync()
+        {
+            Features = await SendMessageAsync<Features, WipeDevice>(new WipeDevice());
+            
+            if (Features == null)
+            {
+                throw new DeviceException("Error wiping Soter Wallet. Features were not retrieved");
+            }
         }
     }
 }
