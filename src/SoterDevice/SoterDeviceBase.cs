@@ -126,7 +126,7 @@ namespace SoterDevice
             try
             {
                 var response = await SendMessageAsync(message);
-                Log.Debug($"Message --> {typeof(TReadMessage).ToString().Substring(22)} {JsonConvert.SerializeObject(response, jsonSerializerSetting)}");
+                Log.Debug($"Message <-- {typeof(TReadMessage).ToString().Substring(22)} {JsonConvert.SerializeObject(response, jsonSerializerSetting)}");
 
                 for (var i = 0; i < 10; i++)
                 {
