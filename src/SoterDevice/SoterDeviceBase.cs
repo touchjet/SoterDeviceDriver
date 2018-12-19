@@ -290,7 +290,7 @@ namespace SoterDevice
             uint coinIndex = 0;
             uint numOfCoins = coinTable.NumCoins;
             uint chunkSize = coinTable.ChunkSize;
-            while (coinIndex <numOfCoins)
+            while (coinIndex < numOfCoins)
             {
                 coinTable = await SendMessageAsync<CoinTable, GetCoinTable>(new GetCoinTable { Start = coinIndex, End = Math.Min(coinIndex + chunkSize, coinTable.NumCoins - 1) });
                 foreach (var coinType in coinTable.Tables)
@@ -302,9 +302,24 @@ namespace SoterDevice
             return coinInfos;
         }
 
-        public async Task ResetDeviceAsync(string deviceName, uint strength = 128, string language="english")
+        public uint MnemonicWordCountToKeyStrength(uint wordCount)
         {
-            var entropyRequest = await SendMessageAsync<EntropyRequest, ResetDevice>(new ResetDevice { DisplayRandom=false,Strength=strength, PassphraseProtection=false, PinProtection=true, Language=language, Label=deviceName});
+            switch (wordCount)
+            {
+                case 12:
+                    return 128;
+                case 18:
+                    return 192;
+                case 24:
+                    return 256;
+                default:
+                    throw new ArgumentException("Invalid Mnemonic Word Count!");
+            }
+        }
+
+        public async Task ResetDeviceAsync(string deviceName, uint mnemonicWordCount = 12, string language = "english")
+        {
+            var entropyRequest = await SendMessageAsync<EntropyRequest, ResetDevice>(new ResetDevice { DisplayRandom = false, Strength = MnemonicWordCountToKeyStrength(mnemonicWordCount), PassphraseProtection = false, PinProtection = true, Language = language, Label = deviceName });
         }
     }
 }

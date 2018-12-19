@@ -21,21 +21,4 @@
     <PackageReference Include="Touchjet.BinaryUtils" Version="1.0.5" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="SoterDevice.Hid\obj\Debug\netstandard2.0\SoterDevice.Hid.AssemblyInfo.cs" />
-    <Compile Remove="ByteBuffer.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="SoterDevice.Hid\obj\SoterDevice.Hid.csproj.nuget.cache" />
-    <None Remove="SoterDevice.Hid\obj\SoterDevice.Hid.csproj.nuget.g.props" />
-    <None Remove="SoterDevice.Hid\obj\SoterDevice.Hid.csproj.nuget.g.targets" />
-    <None Remove="SoterDevice.Hid\obj\project.assets.json" />
-    <None Remove="SoterDevice.Hid\obj\Debug\netstandard2.0\SoterDevice.Hid.AssemblyInfoInputs.cache" />
-    <None Remove="SoterDevice.Hid\obj\Debug\netstandard2.0\SoterDevice.Hid.assets.cache" />
-    <None Remove="SoterDevice.Hid\obj\Debug\netstandard2.0\SoterDevice.Hid.csproj.CoreCompileInputs.cache" />
-    <None Remove="SoterDevice.Hid\obj\Debug\netstandard2.0\SoterDevice.Hid.csproj.FileListAbsolute.txt" />
-    <None Remove="SoterDevice.Hid\obj\Debug\netstandard2.0\SoterDevice.Hid.csprojAssemblyReference.cache" />
-    <None Remove="SoterDevice.Hid\obj\Debug\netstandard2.0\SoterDevice.Hid.dll" />
-    <None Remove="SoterDevice.Hid\obj\Debug\netstandard2.0\SoterDevice.Hid.pdb" />
-  </ItemGroup>
 </Project>
