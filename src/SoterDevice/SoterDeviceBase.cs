@@ -178,7 +178,7 @@ namespace SoterDevice
             LogMessage(message, true);
             await WriteAsync(message);
             var retVal = await ReadAsync();
-            LogMessage(retVal, true);
+            LogMessage(retVal, false);
 
             CheckForFailure(retVal);
 
