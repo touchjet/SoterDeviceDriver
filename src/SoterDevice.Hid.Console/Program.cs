@@ -35,6 +35,8 @@ namespace SoterDevice.Hid
             }
             await _soterDevice.ResetDeviceAsync("Digbig Wallet");
             await _soterDevice.ChangePinAsync();
+            await _soterDevice.ChangeAutoLockDelayAsync(1200000);
+            await _soterDevice.ChangeDeviceNameAsync("Test Wallet");
             var coinTable = await _soterDevice.GetCoinTable();
 
             Log.Information("All Done!");

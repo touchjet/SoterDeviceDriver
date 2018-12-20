@@ -36,5 +36,7 @@ namespace SoterDevice
         Task WipeDeviceAsync();
         Task CancelAsync();
         Task ChangePinAsync(bool remove = false);
+        Task ChangeAutoLockDelayAsync(uint ms);
+        Task ChangeDeviceNameAsync(string deviceName);
     }
 }

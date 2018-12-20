@@ -360,5 +360,17 @@ namespace SoterDevice
             var success = await SendMessageAsync<Success, ChangePin>(new ChangePin() { Remove = remove });
             Log.Debug(success.Message);
         }
+
+        public async Task ChangeAutoLockDelayAsync(uint ms)
+        {
+            var success = await SendMessageAsync<Success, ApplySettings>(new ApplySettings() { AutoLockDelayMs = ms });
+            Log.Debug(success.Message);
+        }
+
+        public async Task ChangeDeviceNameAsync(string deviceName)
+        {
+            var success = await SendMessageAsync<Success, ApplySettings>(new ApplySettings() { Label = deviceName });
+            Log.Debug(success.Message);
+        }
     }
 }
