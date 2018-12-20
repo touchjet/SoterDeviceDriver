@@ -43,7 +43,26 @@ namespace SoterDevice.Hid
             var coinTable = await _soterDevice.GetCoinTable();
             _soterDevice.CoinUtility = new CoinUtility(coinTable);
 
+            //Get Bitcoin Address
             Log.Information(await GetAddressAsync(0, false, 0, false));
+            Log.Information(await GetAddressAsync(0, false, 0, false, true, false));
+            Log.Information(await GetAddressAsync(0, false, 0, false, true, true));
+            Log.Information(await GetAddressAsync(0, false, 0, true));
+
+            //Get Litecoin Address
+            Log.Information(await GetAddressAsync(2, false, 0, false));
+
+            //Get Dodge Address
+            Log.Information(await GetAddressAsync(3, false, 0, false));
+
+            //Get Dash Address
+            Log.Information(await GetAddressAsync(5, false, 0, false));
+
+            //Get Ethereum Address
+            Log.Information(await GetAddressAsync(60, false, 0, false));
+
+            //Get BitcoinCash Address
+            Log.Information(await GetAddressAsync(145, false, 0, false));
 
             Log.Information("All Done!");
         }
