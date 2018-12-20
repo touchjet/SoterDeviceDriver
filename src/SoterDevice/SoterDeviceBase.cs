@@ -372,5 +372,87 @@ namespace SoterDevice
             var success = await SendMessageAsync<Success, ApplySettings>(new ApplySettings() { Label = deviceName });
             Log.Debug(success.Message);
         }
+
+        public async Task<byte[]> SignTransactionAsync(SignTx signTx, List<TxInputType> txInputs, List<TxOutputType> txOutputs)
+        {
+            // For every TX request from Trezor to us, we response with TxAck like below
+            var txAck = new TxAck()
+            {
+                Tx = new TransactionType()
+                {
+                    Expiry = 0,
+                    InputsCnt = (uint)txInputs.Count, // must be exact number of Inputs count
+                    OutputsCnt = (uint)txOutputs.Count, // must be exact number of Outputs count
+                    Version = 2
+                }
+            };
+
+            foreach (var txInput in txInputs)
+            {
+                txAck.Tx.Inputs.Add(txInput);
+            }
+            foreach (var txOutput in txOutputs)
+            {
+                txAck.Tx.Outputs.Add(txOutput);
+            }
+
+            // If the field serialized.serialized_tx from Trezor is set,
+            // it contains a chunk of the signed transaction in serialized format.
+            // The chunks are returned in the right order and just concatenating all returned chunks will result in the signed transaction.
+            // So we need to add chunks to the list
+            var serializedTx = new List<byte>();
+
+            // We send SignTx() to the Trezor and we wait him to send us Request
+            var request = await SendMessageAsync<TxRequest, SignTx>(signTx);
+
+            // We do loop here since we need to send over and over the same transactions to trezor because his 64 kilobytes memory
+            // and he will sign chunks and return part of signed chunk in serialized manner, until we receive finall type of Txrequest TxFinished
+            while (request.RequestType != RequestType.Txfinished)
+            {
+                switch (request.RequestType)
+                {
+                    case RequestType.Txinput:
+                        {
+                            //We send TxAck() with  TxInputs
+                            request = await SendMessageAsync<TxRequest, TxAck>(txAck);
+
+                            // Now we have to check every response is there any SerializedTx chunk 
+                            if (request.Serialized != null)
+                            {
+                                // if there is any we add to our list bytes
+                                serializedTx.AddRange(request.Serialized.SerializedTx);
+                            }
+
+                            break;
+                        }
+                    case RequestType.Txoutput:
+                        {
+                            //We send TxAck()  with  TxOutputs
+                            request = await SendMessageAsync<TxRequest, TxAck>(txAck);
+
+                            // Now we have to check every response is there any SerializedTx chunk 
+                            if (request.Serialized != null)
+                            {
+                                // if there is any we add to our list bytes
+                                serializedTx.AddRange(request.Serialized.SerializedTx);
+                            }
+
+                            break;
+                        }
+
+                    case RequestType.Txextradata:
+                        {
+                            // for now he didn't ask me for extra data :)
+                            break;
+                        }
+                    case RequestType.Txmeta:
+                        {
+                            // for now he didn't ask me for extra Tx meta data :)
+                            break;
+                        }
+                }
+            }
+            return serializedTx.ToArray();
+        }
     }
 }

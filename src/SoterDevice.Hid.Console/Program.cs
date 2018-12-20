@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Serilog;
+using SoterDevice.Contracts;
 using SoterDevice.Models;
+using Touchjet.BinaryUtils;
 
 namespace SoterDevice.Hid
 {
@@ -64,7 +67,49 @@ namespace SoterDevice.Hid
             //Get BitcoinCash Address
             Log.Information(await GetAddressAsync(145, false, 0, false));
 
+            //await SignBitcoinTransactionAsync();
+
             Log.Information("All Done!");
+        }
+
+        static async Task SignBitcoinTransactionAsync()
+        {
+            //get address path for address in Trezor
+            var addressPath = AddressPathBase.Parse<BIP44AddressPath>("m/49'/0'/0'/0/0").ToArray();
+
+            // previous unspent input of Transaction
+            var txInput = new TxInputType()
+            {
+                AddressNs = addressPath,
+                Amount = 100837,
+                ScriptType = InputScriptType.Spendp2shwitness,
+                PrevHash = "3becf448ae38cf08c0db3c6de2acb8e47acf6953331a466fca76165fdef1ccb7".ToBytes(), // transaction ID
+                PrevIndex = 0,
+                Sequence = 4294967293 // Sequence  number represent Replace By Fee 4294967293 or leave empty for default 
+            };
+
+            // TX we want to make a payment
+            var txOut = new TxOutputType()
+            {
+                AddressNs = new uint[0],
+                Amount = 100837,
+                Address = "18UxSJMw7D4UEiRqWkArN1Lq7VSGX6qH3H",
+                ScriptType = OutputScriptType.Paytoaddress // if is segwit use Spendp2shwitness
+
+            };
+
+            // Must be filled with basic data like below
+            var signTx = new SignTx()
+            {
+                Expiry = 0,
+                LockTime = 0,
+                CoinName = "Bitcoin",
+                Version = 2,
+                OutputsCount = 1,
+                InputsCount = 1
+            };
+
+            Log.Information($"TxSignature: {await _soterDevice.SignTransactionAsync(signTx, new List<TxInputType> { txInput }, new List<TxOutputType> { txOut })}");
         }
 
         static Task<string> GetAddressAsync(uint coinNumber, bool isChange, uint index, bool display, bool isPublicKey = false, bool isLegacy = true)

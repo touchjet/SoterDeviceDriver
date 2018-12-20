@@ -41,5 +41,6 @@ namespace SoterDevice
         Task ChangePinAsync(bool remove = false);
         Task ChangeAutoLockDelayAsync(uint ms);
         Task ChangeDeviceNameAsync(string deviceName);
+        Task<byte[]> SignTransactionAsync(SignTx signTx, List<TxInputType> txInputs, List<TxOutputType> txOutputs);
     }
 }
