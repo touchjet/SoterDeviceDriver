@@ -35,7 +35,7 @@ namespace SoterDevice
 {
     public abstract class SoterDeviceBase : ISoterDevice
     {
-        public EnterPinArgs EnterPinCallback;
+        public EnterPinArgs EnterPinCallback { get; set; }
 
         SemaphoreSlim _Lock = new SemaphoreSlim(1, 1);
         static readonly Dictionary<string, Type> _ContractsByName = new Dictionary<string, Type>();

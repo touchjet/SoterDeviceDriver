@@ -18,21 +18,39 @@
 */
 using System;
 using System.Collections.Generic;
+using SoterDevice.Contracts;
+using SoterDevice.Models;
 
 namespace SoterDevice
 {
-    public class CoinUtility
+    public class CoinUtility : ICoinUtility
     {
-        public CoinUtility()
+        public CoinUtility(IEnumerable<CoinType> coinTypes)
         {
-            Coins.Add(0, new CoinInfo("Bitcoin", AddressType.Bitcoin, true, 0));
-            Coins.Add(1, new CoinInfo("Testnet", AddressType.Bitcoin, true, 1));
-            Coins.Add(2, new CoinInfo("Litecoin", AddressType.Bitcoin, true,2));
-            Coins.Add(3, new CoinInfo("Dogecoin", AddressType.Bitcoin, false, 3));
+            foreach (var coinType in coinTypes)
+            {
+                var coinTypeIndex = AddressUtilities.UnhardenNumber(coinType.Bip44AccountPath);
 
-            Coins.Add(60, new CoinInfo("Ethereum", AddressType.Ethereum, false, 60));
-            Coins.Add(61, new CoinInfo("Ethereum Classic", AddressType.Ethereum, false, 61));
+                //Seems like there are some coins on the KeepKey with the wrong index. I.e. they are actually Ethereum?
+                if (Coins.ContainsKey(coinTypeIndex)) continue;
+
+                AddressType addressType;
+
+                switch (coinType.AddressType)
+                {
+                    case 65535:
+                        addressType = AddressType.Ethereum;
+                        break;
+                    default:
+                        addressType = AddressType.Bitcoin;
+                        break;
+                }
+
+                Coins.Add(coinTypeIndex, new CoinInfo(coinType.CoinName, addressType, !IsLegacy && coinType.Segwit, AddressUtilities.UnhardenNumber(coinType.Bip44AccountPath)));
+            }
         }
+
+        public bool IsLegacy { get; set; } = true;
 
         public Dictionary<uint, CoinInfo> Coins { get; } = new Dictionary<uint, CoinInfo>();
 

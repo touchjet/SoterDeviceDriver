@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Serilog;
+using SoterDevice.Models;
 
 namespace SoterDevice.Hid
 {
@@ -16,6 +17,8 @@ namespace SoterDevice.Hid
             ResetDevice().Wait();
         }
 
+        static ISoterDevice _soterDevice;
+
         static async Task ResetDevice()
         {
             await SoterDeviceFactoryHid.Instance.StartDeviceSearchAsync();
@@ -25,7 +28,7 @@ namespace SoterDevice.Hid
             {
                 throw new Exception("Do Soter Wallet device detected!");
             }
-            var _soterDevice = (SoterDeviceHid)SoterDeviceFactoryHid.Instance.Devices.FirstOrDefault();
+            _soterDevice = (SoterDeviceHid)SoterDeviceFactoryHid.Instance.Devices.FirstOrDefault();
             _soterDevice.EnterPinCallback = _soterDevice_EnterPinCallback; ;
             await _soterDevice.InitializeAsync();
             await _soterDevice.CancelAsync();
@@ -38,8 +41,18 @@ namespace SoterDevice.Hid
             await _soterDevice.ChangeAutoLockDelayAsync(1200000);
             await _soterDevice.ChangeDeviceNameAsync("Test Wallet");
             var coinTable = await _soterDevice.GetCoinTable();
+            _soterDevice.CoinUtility = new CoinUtility(coinTable);
+
+            Log.Information(await GetAddressAsync(0, false, 0, false));
 
             Log.Information("All Done!");
+        }
+
+        static Task<string> GetAddressAsync(uint coinNumber, bool isChange, uint index, bool display, bool isPublicKey = false, bool isLegacy = true)
+        {
+            var coinInfo = _soterDevice.CoinUtility.GetCoinInfo(coinNumber);
+            var addressPath = new BIP44AddressPath(!isLegacy && coinInfo.IsSegwit, coinNumber, 0, isChange, index);
+            return _soterDevice.GetAddressAsync((IAddressPath)addressPath, isPublicKey, display);
         }
 
         static Task<string> _soterDevice_EnterPinCallback()
