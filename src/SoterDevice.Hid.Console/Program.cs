@@ -29,12 +29,13 @@ namespace SoterDevice.Hid
             _soterDevice.EnterPinCallback = _soterDevice_EnterPinCallback; ;
             await _soterDevice.InitializeAsync();
             await _soterDevice.CancelAsync();
-            var coinTable = await _soterDevice.GetCoinTable();
             if (_soterDevice.Features.Initialized)
             {
                 await _soterDevice.WipeDeviceAsync();
             }
             await _soterDevice.ResetDeviceAsync("Digbig Wallet");
+            await _soterDevice.ChangePinAsync();
+            var coinTable = await _soterDevice.GetCoinTable();
 
             Log.Information("All Done!");
         }

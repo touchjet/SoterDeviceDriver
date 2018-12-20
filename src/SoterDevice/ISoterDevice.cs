@@ -35,5 +35,6 @@ namespace SoterDevice
         Task ResetDeviceAsync(string deviceName, uint mnemonicWordCount = 12, string language = "english");
         Task WipeDeviceAsync();
         Task CancelAsync();
+        Task ChangePinAsync(bool remove = false);
     }
 }

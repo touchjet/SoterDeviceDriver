@@ -354,5 +354,11 @@ namespace SoterDevice
                 Log.Debug(failure.Message);
             }
         }
+
+        public async Task ChangePinAsync(bool remove = false)
+        {
+            var success = await SendMessageAsync<Success, ChangePin>(new ChangePin() { Remove = remove });
+            Log.Debug(success.Message);
+        }
     }
 }
