@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -115,18 +116,26 @@ namespace SoterDevice
             }
         }
 
+        void LogMessage(object message, bool tx)
+        {
+            var jsonSerializerSetting = new JsonSerializerSettings { Converters = { new JsonByteArrayHexConverter() } };
+            StringBuilder logStringBuilder = new StringBuilder();
+            logStringBuilder.Append("Message ");
+            logStringBuilder.Append( tx ? "--> " : "<-- ");
+            logStringBuilder.Append(message.GetType().ToString().Substring(22));
+            logStringBuilder.Append(JsonConvert.SerializeObject(message, jsonSerializerSetting));
+            Log.Debug(logStringBuilder.ToString());
+        }
+
         public async Task<TReadMessage> SendMessageAsync<TReadMessage, TWriteMessage>(TWriteMessage message)
         {
             ValidateInitialization(message);
-            var jsonSerializerSetting = new JsonSerializerSettings { Converters = { new JsonByteArrayHexConverter() } };
-            Log.Debug($"Message --> {message.GetType().ToString().Substring(22)} {JsonConvert.SerializeObject(message, jsonSerializerSetting)}");
 
             await _Lock.WaitAsync();
 
             try
             {
                 var response = await SendMessageAsync(message);
-                Log.Debug($"Message <-- {response.GetType().ToString().Substring(22)} {JsonConvert.SerializeObject(response, jsonSerializerSetting)}");
 
                 for (var i = 0; i < 10; i++)
                 {
@@ -166,9 +175,10 @@ namespace SoterDevice
 
         protected async Task<object> SendMessageAsync(object message)
         {
+            LogMessage(message, true);
             await WriteAsync(message);
-
             var retVal = await ReadAsync();
+            LogMessage(retVal, true);
 
             CheckForFailure(retVal);
 
@@ -324,12 +334,8 @@ namespace SoterDevice
 
         public async Task WipeDeviceAsync()
         {
-            Features = await SendMessageAsync<Features, WipeDevice>(new WipeDevice());
-            
-            if (Features == null)
-            {
-                throw new DeviceException("Error wiping Soter Wallet. Features were not retrieved");
-            }
+            var success = await SendMessageAsync<Success, WipeDevice>(new WipeDevice());
+            Log.Debug(success.Message);
         }
     }
 }
