@@ -329,7 +329,12 @@ namespace SoterDevice
 
         public async Task ResetDeviceAsync(string deviceName, uint mnemonicWordCount = 12, string language = "english")
         {
+            Random rnd = new Random();
             var entropyRequest = await SendMessageAsync<EntropyRequest, ResetDevice>(new ResetDevice { DisplayRandom = false, Strength = MnemonicWordCountToKeyStrength(mnemonicWordCount), PassphraseProtection = false, PinProtection = true, Language = language, Label = deviceName });
+            byte[] randBytes = new byte[32];
+            rnd.NextBytes(randBytes);
+            var entropy = new EntropyAck() { Entropy = randBytes };
+            var success = await SendMessageAsync<Success, EntropyAck>(entropy);
         }
 
         public async Task WipeDeviceAsync()
