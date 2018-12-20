@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Newtonsoft.Json;
 using ProtoBuf;
 using SoterDevice;
@@ -11,6 +13,7 @@ using Touchjet.BinaryUtils;
 namespace KkUsbLogParser
 {
 #pragma warning disable RECS0060 // Warns when a culture-aware 'IndexOf' call is used by default.
+#pragma warning disable RECS0061 // Warns when a culture-aware 'IndexOf' call is used by default.
     class Program
     {
         static Type MessageTypeType => typeof(MessageType);
@@ -36,14 +39,13 @@ namespace KkUsbLogParser
             }
         }
 
-        static void Main(string[] args)
+        static void ParseFile(string logFileName)
         {
             bool isHeader = true;
             bool isOutput = true;
-            string logFileName = args.Length >= 1 ? args[0] : $"/Users/Zhen/Documents/Keepkey_Init.txt";
             var logLines = File.ReadAllLines(logFileName).Select(line => line.Replace(" ", "")).ToList();
 
-            while(!logLines[0].Contains("---"))
+            while (!logLines[0].Contains("---"))
             {
                 logLines.RemoveAt(0);
             }
@@ -53,7 +55,7 @@ namespace KkUsbLogParser
             byte messageId = 0;
             uint messageLength = 0;
             int lineIndex = 0;
-
+            var resultLines = new List<string>();
             var setting = new JsonSerializerSettings { Converters = { new JsonByteArrayHexConverter() } };
 
             while (lineIndex < logLines.Count())
@@ -100,7 +102,7 @@ namespace KkUsbLogParser
                 }
                 else
                 {
-                    if(isOutput)
+                    if (isOutput)
                     {
                         lineStart = line.IndexOf("OUT") + 3;
                     }
@@ -133,25 +135,36 @@ namespace KkUsbLogParser
 
                     var messageType = (MessageType)Enum.Parse(MessageTypeType, messageTypeValueName);
                     var obj = Deserialize(messageType, buffer.Value);
-                    if (isOutput)
-                    {
-                        Console.Write("-->");
-                    }
-                    else
-                    {
-                        Console.Write("<--");
-                    }
-
-                    Console.WriteLine($"{messageType.ToString()} {JsonConvert.SerializeObject(obj, setting)}");
-
+                    var sb = new StringBuilder();
+                    sb.Append(isOutput ? "-->" : "<--");
+                    sb.Append(messageType.ToString().Substring(11));
+                    sb.Append(" ");
+                    sb.Append(JsonConvert.SerializeObject(obj, setting));
+                    resultLines.Add(sb.ToString());
                 }
                 else
                 {
                     isHeader = false;
                 }
             }
+            File.WriteAllLines(logFileName + ".json", resultLines);
+        }
+        static void Main(string[] args)
+        {
+            string logFolder = @"./logs/";
+            if (args.Length>=1)
+            {
+                logFolder = args[0];
+            }
+            foreach(var fileName in Directory.EnumerateFiles(logFolder))
+            {
+                if (fileName.EndsWith(".txt"))
+                {
+                    ParseFile(fileName);
+                }
+            }
         }
     }
-
+#pragma warning restore RECS0061 // Warns when a culture-aware 'IndexOf' call is used by default.
 #pragma warning restore RECS0060 // Warns when a culture-aware 'IndexOf' call is used by default.
 }
