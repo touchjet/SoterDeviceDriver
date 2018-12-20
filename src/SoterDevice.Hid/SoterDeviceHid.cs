@@ -90,6 +90,7 @@ namespace SoterDevice.Hid
         {
             var readBuffer = new byte[PACKET_SIZE + REPORT_ID_SIZE];
 
+            _hidStream.ReadTimeout = 60000;
             await _hidStream.ReadAsync(readBuffer, 0, PACKET_SIZE + REPORT_ID_SIZE);
             Log.Verbose($"Read from HID: {readBuffer.ToHex()}");
 
