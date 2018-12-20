@@ -21,16 +21,22 @@ namespace SoterDevice.Hid
             await SoterDeviceFactoryHid.Instance.StartDeviceSearchAsync();
             await Task.Delay(3000);
             await SoterDeviceFactoryHid.Instance.StopDeviceSearchAsync();
-            if (SoterDeviceFactoryHid.Instance.Devices.Count==0)
+            if (SoterDeviceFactoryHid.Instance.Devices.Count == 0)
             {
                 throw new Exception("Do Soter Wallet device detected!");
             }
             var _soterDevice = (SoterDeviceHid)SoterDeviceFactoryHid.Instance.Devices.FirstOrDefault();
-            _soterDevice.EnterPinCallback = _soterDevice_EnterPinCallback;;
+            _soterDevice.EnterPinCallback = _soterDevice_EnterPinCallback; ;
             await _soterDevice.InitializeAsync();
+            await _soterDevice.CancelAsync();
             var coinTable = await _soterDevice.GetCoinTable();
+            if (_soterDevice.Features.Initialized)
+            {
+                await _soterDevice.WipeDeviceAsync();
+            }
             await _soterDevice.ResetDeviceAsync("Digbig Wallet");
 
+            Log.Information("All Done!");
         }
 
         static Task<string> _soterDevice_EnterPinCallback()

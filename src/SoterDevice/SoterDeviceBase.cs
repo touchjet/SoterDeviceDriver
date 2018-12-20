@@ -121,7 +121,7 @@ namespace SoterDevice
             var jsonSerializerSetting = new JsonSerializerSettings { Converters = { new JsonByteArrayHexConverter() } };
             StringBuilder logStringBuilder = new StringBuilder();
             logStringBuilder.Append("Message ");
-            logStringBuilder.Append( tx ? "--> " : "<-- ");
+            logStringBuilder.Append(tx ? "--> " : "<-- ");
             logStringBuilder.Append(message.GetType().ToString().Substring(22));
             logStringBuilder.Append(JsonConvert.SerializeObject(message, jsonSerializerSetting));
             Log.Debug(logStringBuilder.ToString());
@@ -196,7 +196,7 @@ namespace SoterDevice
 
             if (retVal is Failure failure)
             {
-                throw new FailureException<Failure>("PIN Attempt Failed.", failure);
+                throw new FailureException<Failure>("ButtonAck Failure.", failure);
             }
 
             return retVal;
@@ -341,6 +341,18 @@ namespace SoterDevice
         {
             var success = await SendMessageAsync<Success, WipeDevice>(new WipeDevice());
             Log.Debug(success.Message);
+        }
+
+        public async Task CancelAsync()
+        {
+            try
+            {
+                await SendMessageAsync<Failure, Cancel>(new Cancel());
+            }
+            catch (FailureException<Failure> failure)
+            {
+                Log.Debug(failure.Message);
+            }
         }
     }
 }

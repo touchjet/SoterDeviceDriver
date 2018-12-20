@@ -34,5 +34,6 @@ namespace SoterDevice
         Task<string> GetAddressAsync(IAddressPath addressPath, bool isPublicKey, bool display, AddressType addressType, InputScriptType inputScriptType, string coinName);
         Task ResetDeviceAsync(string deviceName, uint mnemonicWordCount = 12, string language = "english");
         Task WipeDeviceAsync();
+        Task CancelAsync();
     }
 }
