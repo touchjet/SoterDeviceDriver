@@ -454,5 +454,10 @@ namespace SoterDevice
             }
             return serializedTx.ToArray();
         }
+
+        public async Task<EthereumTxRequest> SignEthereumTransactionAsync(EthereumSignTx signTx)
+        {
+            return await SendMessageAsync<EthereumTxRequest, EthereumSignTx>(signTx);
+        }
     }
 }
