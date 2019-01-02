@@ -123,7 +123,7 @@ namespace SoterDevice.Ble
         {
             uint retries = 0;
             byte[] result = null;
-            while (retries < 10)
+            while (retries < 600)
             {
                 if (_rxBufferQueue.TryDequeue(out result))
                 {
@@ -132,7 +132,7 @@ namespace SoterDevice.Ble
                         return result;
                     }
                 }
-                await Task.Delay(200);
+                await Task.Delay(100);
                 retries++;
             }
             throw new Exception("Error reading data from device.");
