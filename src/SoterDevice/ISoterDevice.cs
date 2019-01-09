@@ -29,6 +29,7 @@ namespace SoterDevice
         EnterPinArgs EnterPinCallback { get; set; }
         ICoinUtility CoinUtility { get; set; }
         string Name { get; }
+        int Mtu { get; }
         Features Features { get; }
         uint MnemonicWordCountToKeyStrength(uint wordCount);
         Task InitializeAsync();

@@ -58,12 +58,16 @@ namespace SoterDevice.Ble
             }
         }
 
+        int _mtu = 23;
+        public override int Mtu { get { return _mtu; } }
+
         async Task GetCharacteristicsAsync()
         {
             if (_device.State != DeviceState.Connected)
             {
                 await CrossBluetoothLE.Current.Adapter.ConnectToDeviceAsync(_device);
             }
+            _mtu = await _device.RequestMtuAsync(255);
             if (_service != null) return;
             _service = await _device.GetServiceAsync(new Guid(SERVICE_GUID_STR));
             if (_service == null)

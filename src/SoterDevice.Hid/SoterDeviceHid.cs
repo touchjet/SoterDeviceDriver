@@ -50,6 +50,8 @@ namespace SoterDevice.Hid
             Log.Information("Soter HID Interface Connected");
         }
 
+        public override int Mtu { get { return 64; } }
+
         protected override async Task WriteAsync(object msg)
         {
             var byteArray = Serialize(msg);
@@ -137,7 +139,7 @@ namespace SoterDevice.Hid
                     continue;
                 }
 
-                length = Math.Min(readBuffer.Length - 1- REPORT_ID_SIZE, remainingDataLength);
+                length = Math.Min(readBuffer.Length - 1 - REPORT_ID_SIZE, remainingDataLength);
 
                 if (readBuffer[REPORT_ID_SIZE] != (byte)'?')
                 {

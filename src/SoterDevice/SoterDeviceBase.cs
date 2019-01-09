@@ -58,6 +58,8 @@ namespace SoterDevice
 
         public ICoinUtility CoinUtility { get; set; }
 
+        public virtual int Mtu => throw new NotImplementedException();
+
         public Task<string> GetAddressAsync(IAddressPath addressPath, bool isPublicKey, bool display)
         {
             if (CoinUtility == null)
@@ -209,7 +211,7 @@ namespace SoterDevice
 
         async Task<object> PinMatrixAckAsync(string pin)
         {
-            var retVal = await SendMessageAsync(new PinMatrixAck { Pin = pin });
+            object retVal = await SendMessageAsync(new PinMatrixAck { Pin = pin });
 
             if (retVal is Failure failure)
             {
