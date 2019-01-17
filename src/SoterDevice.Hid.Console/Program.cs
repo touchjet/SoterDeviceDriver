@@ -25,7 +25,7 @@ namespace SoterDevice.Hid
         static async Task ResetDevice()
         {
             await SoterDeviceFactoryHid.Instance.StartDeviceSearchAsync();
-            await Task.Delay(3000);
+            await Task.Delay(1000);
             await SoterDeviceFactoryHid.Instance.StopDeviceSearchAsync();
             if (SoterDeviceFactoryHid.Instance.Devices.Count == 0)
             {
@@ -40,6 +40,12 @@ namespace SoterDevice.Hid
                 await _soterDevice.WipeDeviceAsync();
             }
             await _soterDevice.ResetDeviceAsync("Digbig Wallet");
+            await _soterDevice.InitializeAsync();
+            if (!_soterDevice.Features.Initialized)
+            {
+                Log.Error("Reset Device Failed!!!");
+                return;
+            }
             await _soterDevice.ChangePinAsync();
             await _soterDevice.ChangeAutoLockDelayAsync(1200000);
             await _soterDevice.ChangeDeviceNameAsync("Test Wallet");
