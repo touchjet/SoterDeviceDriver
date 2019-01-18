@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Threading.Tasks;
+using Plugin.Permissions;
+using Plugin.Permissions.Abstractions;
 using SoterDevice.Ble;
 using Xamarin.Forms;
 
@@ -19,8 +22,28 @@ namespace SoterDeviceBleTest
 
         async void ButtonScan_ClickedAsync(object sender, EventArgs e)
         {
+            if (Device.RuntimePlatform == Device.Android)
+            {
+                var status = await CrossPermissions.Current.CheckPermissionStatusAsync(Permission.Location);
+                if (status != PermissionStatus.Granted)
+                {
+                    if (await CrossPermissions.Current.ShouldShowRequestPermissionRationaleAsync(Permission.Location))
+                    {
+                        await DisplayAlert("Need location", "Gunna need that location", "OK");
+                    }
+
+                    var results = await CrossPermissions.Current.RequestPermissionsAsync(Permission.Location);
+                    //Best practice to always check that the key exists
+                    if (results.ContainsKey(Permission.Location))
+                        status = results[Permission.Location];
+                }
+                if (status != PermissionStatus.Unknown)
+                {
+                    await DisplayAlert("Location Denied", "Can not continue, try again.", "OK");
+                }
+            }
             await SoterDeviceFactoryBle.Instance.StartDeviceSearchAsync();
-            foreach(var device in SoterDeviceFactoryBle.Instance.Devices)
+            foreach (var device in SoterDeviceFactoryBle.Instance.Devices)
             {
                 Console.WriteLine($"Found device: {device.Name}");
             }
@@ -28,10 +51,22 @@ namespace SoterDeviceBleTest
 
         async void Handle_ItemSelected(object sender, SelectedItemChangedEventArgs e)
         {
-            var device = (SoterDeviceBle)e.SelectedItem;
             await SoterDeviceFactoryBle.Instance.StopDeviceSearchAsync();
-            await device.InitializeAsync();
-            var coinTable = await device.GetCoinTable();
+            var _soterDevice = (SoterDeviceBle)e.SelectedItem;
+            await SoterDeviceFactoryBle.Instance.StopDeviceSearchAsync();
+            await _soterDevice.InitializeAsync();
+            if (_soterDevice.Features.Initialized)
+            {
+                await _soterDevice.WipeDeviceAsync();
+            }
+            await _soterDevice.ResetDeviceAsync("Digbig Wallet");
         }
+
+        async Task<string> Device_EnterPinCallback()
+        {
+            await Navigation.PushModalAsync(new PinMatrixPage());
+            return PinMatrixPage.pin;
+        }
+
     }
 }

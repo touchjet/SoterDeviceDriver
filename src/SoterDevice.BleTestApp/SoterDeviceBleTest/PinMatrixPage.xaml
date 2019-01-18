@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="SoterDeviceBleTest.PinMatrixPage">
+    <ContentPage.Content>
+        <StackLayout Orientation="Vertical">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Button x:Name="Button7" Text="*" Grid.Row="0" Grid.Column="0" Clicked="ButtonPIN_Clicked" ClassId="7" />
+                <Button x:Name="Button8" Text="*" Grid.Row="0" Grid.Column="1" Clicked="ButtonPIN_Clicked" ClassId="8" />
+                <Button x:Name="Button9" Text="*" Grid.Row="0" Grid.Column="2" Clicked="ButtonPIN_Clicked" ClassId="9" />
+                <Button x:Name="Button4" Text="*" Grid.Row="1" Grid.Column="0" Clicked="ButtonPIN_Clicked" ClassId="4" />
+                <Button x:Name="Button5" Text="*" Grid.Row="1" Grid.Column="1" Clicked="ButtonPIN_Clicked" ClassId="5" />
+                <Button x:Name="Button6" Text="*" Grid.Row="1" Grid.Column="2" Clicked="ButtonPIN_Clicked" ClassId="6" />
+                <Button x:Name="Button1" Text="*" Grid.Row="2" Grid.Column="0" Clicked="ButtonPIN_Clicked" ClassId="1" />
+                <Button x:Name="Button2" Text="*" Grid.Row="2" Grid.Column="1" Clicked="ButtonPIN_Clicked" ClassId="2" />
+                <Button x:Name="Button3" Text="*" Grid.Row="2" Grid.Column="2" Clicked="ButtonPIN_Clicked" ClassId="3" />
+            </Grid>
+            <Label x:Name="LabelPin" Text="" />
+            <StackLayout Orientation="Horizontal">
+                <Button x:Name="ButtonClear" Text="Clear" Clicked="ButtonClear_Clicked" />
+                <Button x:Name="ButtonConfirm" Text="OK" Clicked="ButtonConfirm_Clicked" />
+            </StackLayout>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>
