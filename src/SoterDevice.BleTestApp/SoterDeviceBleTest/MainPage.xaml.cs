@@ -68,5 +68,11 @@ namespace SoterDeviceBleTest
             return PinMatrixPage.pin;
         }
 
+        async void ButtonDfu_ClickedAsync(object sender, EventArgs e)
+        {
+            SoterDeviceDfuBle dfuBle = new SoterDeviceDfuBle();
+            await dfuBle.SearchAndConnectDeviceAsync();
+        }
+
     }
 }

@@ -3,6 +3,7 @@
     <StackLayout>
         <!-- Place new controls here -->
         <Button Text="Scan For Soter Devices" Clicked="ButtonScan_ClickedAsync" />
+        <Button Text="DFU" Clicked="ButtonDfu_ClickedAsync" />
         <ListView x:Name="ListViewDevice" ItemSelected="Handle_ItemSelected">
             <ListView.ItemTemplate>
                 <DataTemplate>
