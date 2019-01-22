@@ -9,11 +9,13 @@ namespace SoterDevice.Ble
     public class SoterDeviceDfuBle : ISoterDeviceDfu
     {
         IDevice _device;
+        ICharacteristic _dfuPackCharacteristic;
+        ICharacteristic _dfuControlCharacteristic;
 
         const string SERVICE_GUID_STR = "0000fe59-0000-1000-8000-00805f9b34fb";
         const string DFU_PACKET_GUID_STR = "8ec90002-f315-4f60-9fb8-838830daea50";
         const string DFU_CONTROL_GUID_STR = "8ec90001-f315-4f60-9fb8-838830daea50";
-        Guid _serviceGuid = new Guid(SERVICE_GUID_STR);
+        readonly Guid _serviceGuid = new Guid(SERVICE_GUID_STR);
 
         public SoterDeviceDfuBle()
         {
@@ -39,6 +41,8 @@ namespace SoterDevice.Ble
                     if ((service!=null)&&(service.Id== _serviceGuid))
                     {
                         _device = a.Device;
+                        _dfuPackCharacteristic = await service.GetCharacteristicAsync(new Guid(DFU_PACKET_GUID_STR));
+                        _dfuControlCharacteristic = await service.GetCharacteristicAsync(new Guid(DFU_CONTROL_GUID_STR));
                         Log.Information("Connected to DFU Device.");
                     }
                     else
@@ -52,7 +56,7 @@ namespace SoterDevice.Ble
                 }
             };
             await adapter.StartScanningForDevicesAsync(new Guid[] { _serviceGuid });
-            await Task.Delay(5000);
+            await Task.Delay(3000);
             await adapter.StopScanningForDevicesAsync();
             return _device != null;
         }
