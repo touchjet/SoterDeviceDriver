@@ -46,14 +46,15 @@ namespace SoterDevice.Hid
 
         public ObservableCollection<ISoterDevice> Devices { get; private set; }
 
-        CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        CancellationTokenSource cancellationTokenSource;
 
         public Task StartDeviceSearchAsync()
         {
+            cancellationTokenSource = new CancellationTokenSource();
             return Task.Run(
             () =>
             {
-                Devices.Clear();
+                Clear();
                 var hidDeviceList = DeviceList.Local.GetHidDevices().ToArray();
 
                 foreach (var device in hidDeviceList)
@@ -82,6 +83,15 @@ namespace SoterDevice.Hid
         {
             cancellationTokenSource.Cancel();
             return Task.CompletedTask;
+        }
+
+        public void Clear()
+        {
+            foreach(var device in Devices)
+            {
+                ((SoterDeviceHid)device).Dispose();
+            }
+            Devices.Clear();
         }
     }
 }

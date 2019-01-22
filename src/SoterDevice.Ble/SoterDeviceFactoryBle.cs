@@ -50,6 +50,7 @@ namespace SoterDevice.Ble
         public async Task StartDeviceSearchAsync()
         {
             Log.Information("Start device search.");
+            Clear();
             var adapter = CrossBluetoothLE.Current.Adapter;
             adapter.DeviceDiscovered += Adapter_DeviceDiscovered;
             cancellationTokenSource = new CancellationTokenSource();
@@ -83,5 +84,13 @@ namespace SoterDevice.Ble
             }
         }
 
+        public void Clear()
+        {
+            foreach(var device in Devices)
+            {
+                ((SoterDeviceBle)device).Dispose();
+            }
+            Devices.Clear();
+        }
     }
 }

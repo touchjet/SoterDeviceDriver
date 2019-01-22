@@ -24,6 +24,7 @@ namespace SoterDevice
     public interface ISoterDeviceFactory
     {
         ObservableCollection<ISoterDevice> Devices { get; }
+        void Clear();
         Task StartDeviceSearchAsync();
         Task StopDeviceSearchAsync(); 
     }
