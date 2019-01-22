@@ -45,28 +45,14 @@ namespace SoterDevice.Ble
 
         public ObservableCollection<ISoterDevice> Devices { get; private set; }
 
-        CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        CancellationTokenSource cancellationTokenSource;
 
         public async Task StartDeviceSearchAsync()
         {
             Log.Information("Start device search.");
             var adapter = CrossBluetoothLE.Current.Adapter;
-            adapter.DeviceDiscovered += (s, a) =>
-            {
-                try
-                {
-                    if ((!String.IsNullOrWhiteSpace(a.Device.Name)) && a.Device.Name.StartsWith(SoterDeviceBle.DEVICE_NAME_PREFIX, StringComparison.Ordinal))
-                    {
-                        Log.Information($"Found device  {a.Device.Id} -- {a.Device.Name}");
-                        var _soterDevice = new SoterDeviceBle(a.Device, a.Device.Name);
-                        Devices.Add(_soterDevice);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Log.Error(ex.ToString());
-                }
-            };
+            adapter.DeviceDiscovered += Adapter_DeviceDiscovered;
+            cancellationTokenSource = new CancellationTokenSource();
             await adapter.StartScanningForDevicesAsync(null, null, false, cancellationTokenSource.Token);
         }
 
@@ -74,7 +60,28 @@ namespace SoterDevice.Ble
         {
             cancellationTokenSource.Cancel();
             var adapter = CrossBluetoothLE.Current.Adapter;
+            adapter.DeviceDiscovered -= Adapter_DeviceDiscovered;
             await adapter.StopScanningForDevicesAsync();
         }
+
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        async void Adapter_DeviceDiscovered(object sender, Plugin.BLE.Abstractions.EventArgs.DeviceEventArgs e)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+        {
+            try
+            {
+                if ((!String.IsNullOrWhiteSpace(e.Device.Name)) && e.Device.Name.StartsWith("SOTW_", StringComparison.Ordinal))
+                {
+                    Log.Information($"Found device  {e.Device.Id} -- {e.Device.Name}");
+                    var _soterDevice = new SoterDeviceBle(e.Device, e.Device.Name);
+                    Devices.Add(_soterDevice);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.ToString());
+            }
+        }
+
     }
 }
