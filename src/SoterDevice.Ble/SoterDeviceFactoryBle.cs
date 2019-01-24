@@ -18,9 +18,11 @@
 */
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Plugin.BLE;
+using Plugin.BLE.Abstractions.Contracts;
 using Serilog;
 
 namespace SoterDevice.Ble
@@ -38,12 +40,17 @@ namespace SoterDevice.Ble
             }
         }
 
+        IAdapter adapter;
+
         public SoterDeviceFactoryBle()
         {
+            adapter = CrossBluetoothLE.Current.Adapter;
             Devices = new ObservableCollection<ISoterDevice>();
         }
 
         public ObservableCollection<ISoterDevice> Devices { get; private set; }
+
+        public ISoterDevice CurrentDevice { get; private set; }
 
         CancellationTokenSource cancellationTokenSource;
 
@@ -51,7 +58,6 @@ namespace SoterDevice.Ble
         {
             Log.Information("Start device search.");
             Clear();
-            var adapter = CrossBluetoothLE.Current.Adapter;
             adapter.DeviceDiscovered += Adapter_DeviceDiscovered;
             cancellationTokenSource = new CancellationTokenSource();
             await adapter.StartScanningForDevicesAsync(null, null, false, cancellationTokenSource.Token);
@@ -60,7 +66,6 @@ namespace SoterDevice.Ble
         public async Task StopDeviceSearchAsync()
         {
             cancellationTokenSource.Cancel();
-            var adapter = CrossBluetoothLE.Current.Adapter;
             adapter.DeviceDiscovered -= Adapter_DeviceDiscovered;
             await adapter.StopScanningForDevicesAsync();
         }
@@ -86,11 +91,25 @@ namespace SoterDevice.Ble
 
         public void Clear()
         {
-            foreach(var device in Devices)
+            foreach (var device in Devices)
             {
                 ((SoterDeviceBle)device).Dispose();
             }
             Devices.Clear();
+        }
+
+        public async Task<bool> ConnectByNameAsync(string deviceName)
+        {
+            uint waitCount = 0;
+            await StartDeviceSearchAsync();
+            while (!Devices.Any(d => d.Name.Equals(deviceName)) && (waitCount < 30))
+            {
+                await Task.Delay(100);
+                waitCount++;
+            }
+            await StopDeviceSearchAsync();
+            CurrentDevice = Devices.FirstOrDefault(d => d.Name.Equals(deviceName));
+            return CurrentDevice != null;
         }
     }
 }

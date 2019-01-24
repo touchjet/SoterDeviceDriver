@@ -46,6 +46,8 @@ namespace SoterDevice.Hid
 
         public ObservableCollection<ISoterDevice> Devices { get; private set; }
 
+        public ISoterDevice CurrentDevice { get; private set; }
+
         CancellationTokenSource cancellationTokenSource;
 
         public Task StartDeviceSearchAsync()
@@ -68,14 +70,15 @@ namespace SoterDevice.Hid
                             {
                                 var _soterDevice = new SoterDeviceHid(device, device.GetProductName());
                                 Devices.Add(_soterDevice);
-                            } catch (Exception ex)
+                            }
+                            catch (Exception ex)
                             {
                                 Log.Error($"Error adding new soter hid device : {ex.ToString()}");
                             }
                         }
                     }
                 }
-            }, 
+            },
             cancellationTokenSource.Token);
         }
 
@@ -87,11 +90,25 @@ namespace SoterDevice.Hid
 
         public void Clear()
         {
-            foreach(var device in Devices)
+            foreach (var device in Devices)
             {
                 ((SoterDeviceHid)device).Dispose();
             }
             Devices.Clear();
+        }
+
+        public async Task<bool> ConnectByNameAsync(string deviceName)
+        {
+            uint waitCount = 0;
+            await StartDeviceSearchAsync();
+            while (!Devices.Any(d => d.Name.Equals(deviceName)) && (waitCount < 30))
+            {
+                await Task.Delay(100);
+                waitCount++;
+            }
+            await StopDeviceSearchAsync();
+            CurrentDevice = Devices.FirstOrDefault(d => d.Name.Equals(deviceName));
+            return CurrentDevice != null;
         }
     }
 }
