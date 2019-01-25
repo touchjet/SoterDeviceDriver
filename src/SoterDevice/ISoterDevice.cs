@@ -33,7 +33,7 @@ namespace SoterDevice
         Features Features { get; }
         uint MnemonicWordCountToKeyStrength(uint wordCount);
         Task InitializeAsync();
-        Task<IEnumerable<CoinType>> GetCoinTable();
+        Task<IEnumerable<CoinType>> GetCoinTableAsync();
         Task<string> GetAddressAsync(IAddressPath addressPath, bool isPublicKey, bool display);
         Task<string> GetAddressAsync(IAddressPath addressPath, bool isPublicKey, bool display, AddressType addressType, InputScriptType inputScriptType, string coinName);
         Task ResetDeviceAsync(string deviceName, uint mnemonicWordCount = 12, string language = "english");

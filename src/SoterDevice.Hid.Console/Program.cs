@@ -49,7 +49,7 @@ namespace SoterDevice.Hid
             await _soterDevice.ChangePinAsync();
             await _soterDevice.ChangeAutoLockDelayAsync(1200000);
             await _soterDevice.ChangeDeviceNameAsync("Test Wallet");
-            var coinTable = await _soterDevice.GetCoinTable();
+            var coinTable = await _soterDevice.GetCoinTableAsync();
             _soterDevice.CoinUtility = new CoinUtility(coinTable);
 
             //Get Bitcoin Address

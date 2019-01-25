@@ -294,7 +294,7 @@ namespace SoterDevice
             }
         }
 
-        public async Task<IEnumerable<CoinType>> GetCoinTable()
+        public async Task<IEnumerable<CoinType>> GetCoinTableAsync()
         {
             var coinInfos = new List<CoinType>();
             var coinTable = await SendMessageAsync<CoinTable, GetCoinTable>(new GetCoinTable());
