@@ -54,7 +54,7 @@ namespace SoterDevice.Hid.Tests
             _soterDevice = (SoterDeviceHid)SoterDeviceFactoryHid.Instance.Devices.FirstOrDefault();
             _soterDevice.EnterPinCallback = HandleEnterPinArgs;
             await _soterDevice.InitializeAsync();
-            var coinTable = await _soterDevice.GetCoinTable();
+            var coinTable = await _soterDevice.GetCoinTableAsync();
             _soterDevice.CoinUtility = new SoterCoinUtility(coinTable);
         }
 
