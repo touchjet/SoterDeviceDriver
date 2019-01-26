@@ -164,6 +164,10 @@ namespace SoterDevice.Hid
             return msg;
         }
 
+        public override void Disconnect()
+        {
+        }
+
         public void Dispose()
         {
             _hidStream?.Close();

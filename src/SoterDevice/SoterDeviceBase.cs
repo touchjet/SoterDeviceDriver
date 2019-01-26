@@ -48,6 +48,8 @@ namespace SoterDevice
 
         protected Type MessageTypeType => typeof(MessageType);
 
+        public abstract void Disconnect();
+
         protected int _invalidRxChunksCounter;
 
         public bool IsInitialized => Features != null;
@@ -461,5 +463,6 @@ namespace SoterDevice
         {
             return await SendMessageAsync<EthereumTxRequest, EthereumSignTx>(signTx);
         }
+
     }
 }

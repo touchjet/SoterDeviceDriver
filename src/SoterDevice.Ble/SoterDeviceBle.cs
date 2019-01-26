@@ -41,7 +41,7 @@ namespace SoterDevice.Ble
         public const string DEVICE_RX_GUID_STR = "69996002-e8b3-11e8-9f32-f2801f1b9fd1";
         public const string DEVICE_TX_GUID_STR = "69996003-e8b3-11e8-9f32-f2801f1b9fd1";
         public const string DEVICE_NAME_PREFIX = "SOTW_";
-        
+
         IDevice _device;
         IService _service;
         ICharacteristic _char_device_rx;
@@ -210,8 +210,17 @@ namespace SoterDevice.Ble
             return msg;
         }
 
+        public override void Disconnect()
+        {
+            if (_device.State == DeviceState.Connected)
+            {
+                CrossBluetoothLE.Current.Adapter.DisconnectDeviceAsync(_device).Wait();
+            }
+        }
+
         public void Dispose()
         {
+            Disconnect();
             _device?.Dispose();
         }
     }

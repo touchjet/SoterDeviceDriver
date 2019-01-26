@@ -44,5 +44,6 @@ namespace SoterDevice
         Task ChangeDeviceNameAsync(string deviceName);
         Task<byte[]> SignTransactionAsync(SignTx signTx, List<TxInputType> txInputs, List<TxOutputType> txOutputs);
         Task<EthereumTxRequest> SignEthereumTransactionAsync(EthereumSignTx signTx);
+        void Disconnect();
     }
 }
