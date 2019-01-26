@@ -49,10 +49,11 @@ namespace SoterDevice.Ble
 
         ConcurrentQueue<byte[]> _rxBufferQueue = new ConcurrentQueue<byte[]>();
 
-        public SoterDeviceBle(IDevice device, string name)
+        public SoterDeviceBle(IDevice device)
         {
             _device = device;
-            Name = name;
+            Name = device.Name;
+            Id = device.Id.ToString();
         }
 
         int _mtu = 23;

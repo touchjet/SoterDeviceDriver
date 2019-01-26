@@ -40,13 +40,13 @@ namespace SoterDevice.Hid
         public const uint PID = 1;
         public const uint HID_USAGE = 0xFF000001;
 
-        public SoterDeviceHid(HidDevice hidDevice, string name)
+        public SoterDeviceHid(HidDevice hidDevice)
         {
             if (!hidDevice.TryOpen(out _hidStream))
             {
                 throw new Exception("Error open HID device");
             }
-            Name = name;
+            Name = hidDevice.GetProductName();
             Log.Information("Soter HID Interface Connected");
         }
 

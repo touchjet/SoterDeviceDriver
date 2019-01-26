@@ -68,7 +68,7 @@ namespace SoterDevice.Hid
                         {
                             try
                             {
-                                var _soterDevice = new SoterDeviceHid(device, device.GetProductName());
+                                var _soterDevice = new SoterDeviceHid(device);
                                 Devices.Add(_soterDevice);
                             }
                             catch (Exception ex)
@@ -110,7 +110,7 @@ namespace SoterDevice.Hid
             CurrentDevice = Devices.FirstOrDefault(d => d.Name.Equals(deviceName));
             return CurrentDevice != null;
         }
-        
+
         public Task<bool> ConnectByIdAsync(string deviceId)
         {
             throw new NotImplementedException();

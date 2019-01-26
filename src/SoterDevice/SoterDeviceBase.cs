@@ -58,6 +58,8 @@ namespace SoterDevice
 
         public string Name { get; protected set; }
 
+        public string Id { get; protected set; }
+
         public ICoinUtility CoinUtility { get; set; }
 
         public virtual int Mtu => throw new NotImplementedException();

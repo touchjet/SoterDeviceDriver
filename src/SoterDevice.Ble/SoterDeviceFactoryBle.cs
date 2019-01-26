@@ -79,7 +79,7 @@ namespace SoterDevice.Ble
                 if ((!String.IsNullOrWhiteSpace(e.Device.Name)) && e.Device.Name.StartsWith("SOTW_", StringComparison.Ordinal))
                 {
                     Log.Information($"Found device  {e.Device.Id} -- {e.Device.Name}");
-                    var _soterDevice = new SoterDeviceBle(e.Device, e.Device.Name);
+                    var _soterDevice = new SoterDeviceBle(e.Device);
                     Devices.Add(_soterDevice);
                 }
             }
@@ -125,7 +125,7 @@ namespace SoterDevice.Ble
                 }
                 if (connectionTask.IsCompleted)
                 {
-                    CurrentDevice = new SoterDeviceBle(connectionTask.Result, connectionTask.Result.Name);
+                    CurrentDevice = new SoterDeviceBle(connectionTask.Result);
                     return true;
                 }
                 else
