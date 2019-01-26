@@ -110,5 +110,10 @@ namespace SoterDevice.Hid
             CurrentDevice = Devices.FirstOrDefault(d => d.Name.Equals(deviceName));
             return CurrentDevice != null;
         }
+        
+        public Task<bool> ConnectByIdAsync(string deviceId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -29,5 +29,6 @@ namespace SoterDevice
         Task StartDeviceSearchAsync();
         Task StopDeviceSearchAsync();
         Task<bool> ConnectByNameAsync(string deviceName);
+        Task<bool> ConnectByIdAsync(string deviceId);
     }
 }

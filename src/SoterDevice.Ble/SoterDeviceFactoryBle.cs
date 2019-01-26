@@ -111,5 +111,29 @@ namespace SoterDevice.Ble
             CurrentDevice = Devices.FirstOrDefault(d => d.Name.Equals(deviceName));
             return CurrentDevice != null;
         }
+
+        public async Task<bool> ConnectByIdAsync(string deviceId)
+        {
+            using (var cts = new CancellationTokenSource())
+            {
+                var connectionTask = adapter.ConnectToKnownDeviceAsync(new Guid(deviceId), cancellationToken: cts.Token);
+                uint delayCount = 0;
+                while ((!connectionTask.IsCompleted) && (delayCount < 50))
+                {
+                    await Task.Delay(100);
+                    delayCount++;
+                }
+                if (connectionTask.IsCompleted)
+                {
+                    CurrentDevice = new SoterDeviceBle(connectionTask.Result, connectionTask.Result.Name);
+                    return true;
+                }
+                else
+                {
+                    cts.Cancel();
+                    return false;
+                }
+            }
+        }
     }
 }
