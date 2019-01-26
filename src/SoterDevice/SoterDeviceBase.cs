@@ -294,13 +294,13 @@ namespace SoterDevice
             }
         }
 
-        public async Task<IEnumerable<CoinType>> GetCoinTableAsync()
+        public async Task<IEnumerable<CoinType>> GetCoinTableAsync(uint maxRecords = 0)
         {
             var coinInfos = new List<CoinType>();
             var coinTable = await SendMessageAsync<CoinTable, GetCoinTable>(new GetCoinTable());
 
             uint coinIndex = 0;
-            uint numOfCoins = coinTable.NumCoins;
+            uint numOfCoins = maxRecords == 0 ? coinTable.NumCoins : Math.Min(maxRecords, coinTable.NumCoins);
             uint chunkSize = coinTable.ChunkSize;
             while (coinIndex < numOfCoins)
             {
