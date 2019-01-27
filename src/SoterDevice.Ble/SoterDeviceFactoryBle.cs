@@ -100,6 +100,12 @@ namespace SoterDevice.Ble
 
         public async Task<bool> ConnectByNameAsync(string deviceName)
         {
+            CurrentDevice = null;
+            CurrentDevice = Devices.First(d => d.Name.Equals(deviceName));
+            if (CurrentDevice != null)
+            {
+                return true;
+            }
             uint waitCount = 0;
             await StartDeviceSearchAsync();
             while (!Devices.Any(d => d.Name.Equals(deviceName)) && (waitCount < 30))
@@ -114,6 +120,12 @@ namespace SoterDevice.Ble
 
         public async Task<bool> ConnectByIdAsync(string deviceId)
         {
+            CurrentDevice = null;
+            CurrentDevice = Devices.First(d => d.Id.Equals(deviceId));
+            if (CurrentDevice != null)
+            {
+                return true;
+            }
             using (var cts = new CancellationTokenSource())
             {
                 var connectionTask = adapter.ConnectToKnownDeviceAsync(new Guid(deviceId), cancellationToken: cts.Token);
