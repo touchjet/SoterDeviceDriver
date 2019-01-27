@@ -215,7 +215,7 @@ namespace SoterDevice.Ble
         {
             if (_device.State == DeviceState.Connected)
             {
-                CrossBluetoothLE.Current.Adapter.DisconnectDeviceAsync(_device).Wait();
+                CrossBluetoothLE.Current.Adapter.DisconnectDeviceAsync(_device);
             }
         }
 
