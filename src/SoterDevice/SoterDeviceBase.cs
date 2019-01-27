@@ -19,7 +19,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -35,7 +34,9 @@ namespace SoterDevice
 {
     public abstract class SoterDeviceBase : ISoterDevice
     {
-        public EnterPinArgs EnterPinCallback { get; set; }
+        public ButtonRequestHandler DeviceButtonRequestCallback { get; set; }
+
+        public EnterPinHandler EnterPinCallback { get; set; }
 
         SemaphoreSlim _Lock = new SemaphoreSlim(1, 1);
         static readonly Dictionary<string, Type> _ContractsByName = new Dictionary<string, Type>();
@@ -157,6 +158,7 @@ namespace SoterDevice
 
                     else if (IsButtonRequest(response))
                     {
+                        DeviceButtonRequestCallback?.Invoke();
                         response = await ButtonAckAsync();
 
                         if (response is TReadMessage readMessage)

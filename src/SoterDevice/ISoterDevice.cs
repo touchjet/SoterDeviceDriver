@@ -26,7 +26,8 @@ namespace SoterDevice
 {
     public interface ISoterDevice
     {
-        EnterPinArgs EnterPinCallback { get; set; }
+        ButtonRequestHandler DeviceButtonRequestCallback { get; set; }
+        EnterPinHandler EnterPinCallback { get; set; }
         ICoinUtility CoinUtility { get; set; }
         string Name { get; }
         string Id { get; }

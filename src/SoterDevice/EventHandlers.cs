@@ -20,5 +20,6 @@ using System.Threading.Tasks;
 
 namespace SoterDevice
 {
-    public delegate Task<string> EnterPinArgs();
+    public delegate void ButtonRequestHandler();
+    public delegate Task<string> EnterPinHandler();
 }
