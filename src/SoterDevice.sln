@@ -21,16 +21,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plugin.BLE.Android", "..\xa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plugin.BLE.iOS", "..\xamarin-bluetooth-le\Source\Plugin.BLE.iOS\Plugin.BLE.iOS.csproj", "{00F27EFE-B8A3-4FD3-BC1F-1179FA7D91B9}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BleTestApp", "BleTestApp", "{FCF8F8B1-0AD3-44CC-B8BE-45217F4668E8}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoterDeviceBleTest.Android", "SoterDevice.BleTestApp\SoterDeviceBleTest.Android\SoterDeviceBleTest.Android.csproj", "{4AB0A8B0-CB30-4832-BD10-7FBD1B4585D5}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoterDeviceBleTest.iOS", "SoterDevice.BleTestApp\SoterDeviceBleTest.iOS\SoterDeviceBleTest.iOS.csproj", "{E55DEF74-B1C5-429D-B379-03A474D27278}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoterDeviceBleTest.UITests", "SoterDevice.BleTestApp\SoterDeviceBleTest.UITests\SoterDeviceBleTest.UITests.csproj", "{B19C892E-2628-4CA7-AD27-08D406A3B14B}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoterDeviceBleTest", "SoterDevice.BleTestApp\SoterDeviceBleTest\SoterDeviceBleTest.csproj", "{480D0235-40A8-4D59-8F56-F6A1DDFF024C}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Keepkey", "Keepkey", "{CFA6A7ED-100F-445A-9D2A-F379835503EA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KkUsbLogParser", "Keepkey\KkUsbLogParser\KkUsbLogParser.csproj", "{5E284EA8-1202-400F-B4D9-92EDFB31067B}"
