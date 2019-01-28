@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using HidSharp;
 using Serilog;
+using SoterDevice.Contracts;
 using SoterDevice.Models;
 using Xunit;
 using Xunit.Abstractions;
@@ -21,7 +22,7 @@ namespace SoterDevice.Hid.Tests
                 .CreateLogger();
         }
 
-        async Task<string> HandleEnterPinArgs()
+        async Task<string> HandleEnterPinArgs(PinMatrixRequestType pinType)
         {
             throw new Exception("Needs PIN!");
         }

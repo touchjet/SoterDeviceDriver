@@ -148,7 +148,7 @@ namespace SoterDevice
                 {
                     if (IsPinMatrixRequest(response))
                     {
-                        var pin = await EnterPinCallback.Invoke();
+                        var pin = await EnterPinCallback.Invoke((response as PinMatrixRequest).Type);
                         response = await PinMatrixAckAsync(pin);
                         if (response is TReadMessage readMessage)
                         {

@@ -17,9 +17,10 @@
  * limitations under the License.
 */
 using System.Threading.Tasks;
+using SoterDevice.Contracts;
 
 namespace SoterDevice
 {
     public delegate void ButtonRequestHandler();
-    public delegate Task<string> EnterPinHandler();
+    public delegate Task<string> EnterPinHandler(PinMatrixRequestType pinType);
 }

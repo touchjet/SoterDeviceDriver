@@ -125,7 +125,7 @@ namespace SoterDevice.Hid
             return _soterDevice.GetAddressAsync((IAddressPath)addressPath, isPublicKey, display);
         }
 
-        static Task<string> _soterDevice_EnterPinCallback()
+        static Task<string> _soterDevice_EnterPinCallback(PinMatrixRequestType pinType)
         {
             Console.WriteLine("Enter Pin Number:");
             Console.WriteLine("    7    8    9");
