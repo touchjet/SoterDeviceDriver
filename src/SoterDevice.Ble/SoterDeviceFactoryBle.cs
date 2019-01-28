@@ -121,7 +121,7 @@ namespace SoterDevice.Ble
         public async Task<bool> ConnectByIdAsync(string deviceId)
         {
             CurrentDevice = null;
-            CurrentDevice = Devices.First(d => d.Id.Equals(deviceId));
+            CurrentDevice = Devices.FirstOrDefault(d => d.Id.Equals(deviceId));
             if (CurrentDevice != null)
             {
                 return true;
