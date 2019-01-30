@@ -24,6 +24,7 @@ namespace SoterDevice.Hid
 
         static async Task ResetDevice()
         {
+            IEnumerable<CoinType> coinTable;
             await SoterDeviceFactoryHid.Instance.StartDeviceSearchAsync();
             await Task.Delay(1000);
             await SoterDeviceFactoryHid.Instance.StopDeviceSearchAsync();
@@ -37,6 +38,10 @@ namespace SoterDevice.Hid
             await _soterDevice.CancelAsync();
             if (_soterDevice.Features.Initialized)
             {
+                coinTable = await _soterDevice.GetCoinTableAsync(24);
+                _soterDevice.CoinUtility = new CoinUtility(coinTable);
+                //Get Bitcoin Testnet Address
+                Log.Information(await GetAddressAsync(1, false, 0, false, false, false));
                 await _soterDevice.WipeDeviceAsync();
             }
             await _soterDevice.ResetDeviceAsync("Digbig Wallet");
@@ -49,7 +54,7 @@ namespace SoterDevice.Hid
             await _soterDevice.ChangePinAsync();
             await _soterDevice.ChangeAutoLockDelayAsync(1200000);
             await _soterDevice.ChangeDeviceNameAsync("Test Wallet");
-            var coinTable = await _soterDevice.GetCoinTableAsync();
+            coinTable = await _soterDevice.GetCoinTableAsync();
             _soterDevice.CoinUtility = new CoinUtility(coinTable);
 
             //Get Bitcoin Address
