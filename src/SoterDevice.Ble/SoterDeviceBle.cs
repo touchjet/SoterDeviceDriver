@@ -107,14 +107,14 @@ namespace SoterDevice.Ble
             data.Put(msgSize);
             data.Put(byteArray);
 
-            var chunks = Math.Max(data.Position, PAYLOAD_SIZE) / PAYLOAD_SIZE;
+            var chunks = (data.Position + PAYLOAD_SIZE - 1) / PAYLOAD_SIZE;
 
             for (var i = 0; i < chunks; i++)
             {
                 var range = new byte[PACKET_SIZE];
                 range[0] = (byte)'?';
                 Buffer.BlockCopy(data.Value, i * PAYLOAD_SIZE, range, 1, PAYLOAD_SIZE);
-                Log.Verbose($"Write to BLE: {range.ToHex()}");
+                Log.Verbose($"Write to BLE({i}of{chunks}): {range.ToHex()}");
                 await _char_device_rx.WriteAsync(range);
             }
 
