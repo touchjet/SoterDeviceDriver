@@ -22,7 +22,7 @@ namespace SoterDevice.Hid.Tests
                 .CreateLogger();
         }
 
-        async Task<string> HandleEnterPinArgs(PinMatrixRequestType pinType)
+        Task<string> HandleEnterPinArgs(PinMatrixRequestType pinType)
         {
             throw new Exception("Needs PIN!");
         }
@@ -68,8 +68,8 @@ namespace SoterDevice.Hid.Tests
         [Fact]
         public async Task DisplayBitcoinAddress()
         {
-             await GetAndInitialize();
-             var address = await GetAddressAsync(0, false, 0, true);
+            await GetAndInitialize();
+            var address = await GetAddressAsync(0, false, 0, true);
         }
 
         /*

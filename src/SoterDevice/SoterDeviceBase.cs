@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -383,66 +384,111 @@ namespace SoterDevice
 
         public async Task<byte[]> SignTransactionAsync(SignTx signTx, List<TxInputType> txInputs, List<TxOutputType> txOutputs)
         {
-            // For every TX request from Trezor to us, we response with TxAck like below
-            var txAck = new TxAck()
+            var txDic = new Dictionary<string, TransactionType>();
+            var unsignedTx = new TransactionType()
             {
-                Tx = new TransactionType()
-                {
-                    Expiry = 0,
-                    InputsCnt = (uint)txInputs.Count, // must be exact number of Inputs count
-                    OutputsCnt = (uint)txOutputs.Count, // must be exact number of Outputs count
-                    Version = 2
-                }
+                Version = signTx.Version,
+                InputsCnt = (uint)txInputs.Count, // must be exact number of Inputs count
+                OutputsCnt = (uint)txOutputs.Count, // must be exact number of Outputs count
+                LockTime = signTx.LockTime,
             };
 
             foreach (var txInput in txInputs)
             {
-                txAck.Tx.Inputs.Add(txInput);
+                unsignedTx.Inputs.Add(txInput);
             }
+
             foreach (var txOutput in txOutputs)
             {
-                txAck.Tx.Outputs.Add(txOutput);
+                unsignedTx.Outputs.Add(txOutput);
             }
 
-            // If the field serialized.serialized_tx from Trezor is set,
-            // it contains a chunk of the signed transaction in serialized format.
-            // The chunks are returned in the right order and just concatenating all returned chunks will result in the signed transaction.
-            // So we need to add chunks to the list
-            var serializedTx = new List<byte>();
+            txDic.Add("unsigned", unsignedTx);
 
-            // We send SignTx() to the Trezor and we wait him to send us Request
+            foreach (var txInput in txInputs)
+            {
+                var tx = new TransactionType
+                {
+                    Version = signTx.Version,
+                    LockTime = signTx.LockTime,
+                };
+            }
+
+            var serializedTx = new Dictionary<uint, byte[]>();
+
             var request = await SendMessageAsync<TxRequest, SignTx>(signTx);
-
+            TxAck txAck;
             // We do loop here since we need to send over and over the same transactions to trezor because his 64 kilobytes memory
             // and he will sign chunks and return part of signed chunk in serialized manner, until we receive finall type of Txrequest TxFinished
             while (request.RequestType != RequestType.Txfinished)
             {
+                TransactionType currentTx;
+                if ((request.Details != null) && (request.Details.TxHash != null))
+                {
+                    string hash = request.Details.TxHash.ToHex();
+                    if (txDic.ContainsKey(hash))
+                    {
+                        currentTx = txDic[hash];
+                    }
+                    else
+                    {
+                        Log.Error($"Unknown hash {hash}");
+                        currentTx = txDic["unsigned"];
+                    }
+                }
+                else
+                {
+                    currentTx = txDic["unsigned"];
+                }
+
                 switch (request.RequestType)
                 {
                     case RequestType.Txinput:
                         {
+                            var msg = new TransactionType();
+                            foreach (var input in currentTx.Inputs)
+                            {
+                                msg.Inputs.Add(input);
+                            };
+
+                            txAck = new TxAck { Tx = msg };
                             //We send TxAck() with  TxInputs
                             request = await SendMessageAsync<TxRequest, TxAck>(txAck);
 
                             // Now we have to check every response is there any SerializedTx chunk 
                             if (request.Serialized != null)
                             {
-                                // if there is any we add to our list bytes
-                                serializedTx.AddRange(request.Serialized.SerializedTx);
+                                serializedTx.Add(request.Serialized.SignatureIndex, request.Serialized.SerializedTx);
                             }
 
                             break;
                         }
                     case RequestType.Txoutput:
                         {
+                            var msg = new TransactionType();
+                            if ((request.Details != null) && (request.Details.TxHash != null))
+                            {
+                                foreach (var binOutput in currentTx.BinOutputs)
+                                {
+                                    msg.BinOutputs.Add(binOutput);
+                                }
+                            }
+                            else
+                            {
+                                foreach (var output in currentTx.Outputs)
+                                {
+                                    msg.Outputs.Add(output);
+                                }
+                            }
+
+                            txAck = new TxAck { Tx = msg };
                             //We send TxAck()  with  TxOutputs
                             request = await SendMessageAsync<TxRequest, TxAck>(txAck);
 
                             // Now we have to check every response is there any SerializedTx chunk 
                             if (request.Serialized != null)
                             {
-                                // if there is any we add to our list bytes
-                                serializedTx.AddRange(request.Serialized.SerializedTx);
+                                serializedTx.Add(request.Serialized.SignatureIndex, request.Serialized.SerializedTx);
                             }
 
                             break;
@@ -450,17 +496,48 @@ namespace SoterDevice
 
                     case RequestType.Txextradata:
                         {
-                            // for now he didn't ask me for extra data :)
+                            var offset = request.Details.ExtraDataOffset;
+                            var length = request.Details.ExtraDataLen;
+                            var msg = new TransactionType
+                            {
+                                ExtraData = currentTx.ExtraData.Skip((int)offset).Take((int)length).ToArray()
+                            };
+                            txAck = new TxAck { Tx = msg };
+                            //We send TxAck() with  TxInputs
+                            request = await SendMessageAsync<TxRequest, TxAck>(txAck);
+                            // Now we have to check every response is there any SerializedTx chunk 
+                            if (request.Serialized != null)
+                            {
+                                serializedTx.Add(request.Serialized.SignatureIndex, request.Serialized.SerializedTx);
+                            }
                             break;
                         }
                     case RequestType.Txmeta:
                         {
-                            // for now he didn't ask me for extra Tx meta data :)
+                            var msg = new TransactionType
+                            {
+                                Version = currentTx.Version,
+                                LockTime = currentTx.LockTime,
+                                InputsCnt = currentTx.InputsCnt,
+                                OutputsCnt = (request.Details != null) && (request.Details.TxHash != null) ? (uint)currentTx.BinOutputs.Count : (uint)currentTx.Outputs.Count,
+                                ExtraDataLen = currentTx.ExtraData != null ? (uint)currentTx.ExtraData.Length : 0
+                            };
+                            txAck = new TxAck { Tx = msg };
+                            //We send TxAck() with  TxInputs
+                            request = await SendMessageAsync<TxRequest, TxAck>(txAck);
+
+                            // Now we have to check every response is there any SerializedTx chunk 
+                            if (request.Serialized != null)
+                            {
+                                serializedTx.Add(request.Serialized.SignatureIndex, request.Serialized.SerializedTx);
+                            }
+
                             break;
                         }
                 }
             }
-            return serializedTx.ToArray();
+            Log.Information($"Signed Tx :{JsonConvert.SerializeObject(serializedTx)}");
+            return serializedTx.First().Value;
         }
 
         public async Task<EthereumTxRequest> SignEthereumTransactionAsync(EthereumSignTx signTx)
