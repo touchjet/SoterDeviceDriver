@@ -382,41 +382,90 @@ namespace SoterDevice
             Log.Debug(success.Message);
         }
 
-        public async Task<byte[]> SignTransactionAsync(SignTx signTx, List<TxInputType> txInputs, List<TxOutputType> txOutputs)
+        void CopyInputs(List<BitcoinTransactionInput> from, List<TxInputType> to)
+        {
+            foreach (var txInput in from)
+            {
+                to.Add(new TxInputType
+                {
+                    AddressNs = txInput.AddressNs,
+                    Amount = txInput.Amount,
+                    DecredScriptVersion = txInput.DecredScriptVersion,
+                    DecredTree = txInput.DecredTree,
+                    Multisig = txInput.Multisig,
+                    PrevHash = txInput.PrevHash,
+                    PrevIndex = txInput.PrevIndex,
+                    ScriptSig = txInput.ScriptSig,
+                    ScriptType = txInput.ScriptType,
+                    Sequence = txInput.Sequence
+                });
+            }
+        }
+
+        void CopyOutputs(List<BitcoinTransactionOutput> from, List<TxOutputType> to)
+        {
+            foreach (var txOutput in from)
+            {
+                to.Add(new TxOutputType
+                {
+                    AddressNs = txOutput.AddressNs,
+                    Address = txOutput.Address,
+                    Amount = txOutput.Amount,
+                    AddressType = txOutput.AddressType,
+                    DecredScriptVersion = txOutput.DecredScriptVersion,
+                    ExchangeType = txOutput.ExchangeType,
+                    Multisig = txOutput.Multisig,
+                    ScriptType = txOutput.ScriptType,
+                    OpReturnData = txOutput.OpReturnData
+                });
+            }
+        }
+
+        public async Task<byte[]> SignTransactionAsync(BitcoinTransaction transaction)
         {
             var txDic = new Dictionary<string, TransactionType>();
-            var unsignedTx = new TransactionType()
+            var unsignedTx = new TransactionType
             {
-                Version = signTx.Version,
-                InputsCnt = (uint)txInputs.Count, // must be exact number of Inputs count
-                OutputsCnt = (uint)txOutputs.Count, // must be exact number of Outputs count
-                LockTime = signTx.LockTime,
+                Version = transaction.Version,
+                InputsCnt = (uint)transaction.Inputs.Count, // must be exact number of Inputs count
+                OutputsCnt = (uint)transaction.Outputs.Count, // must be exact number of Outputs count
+                LockTime = transaction.LockTime,
+                ExtraData = transaction.ExtraData,
+                ExtraDataLen = transaction.ExtraData == null ? 0 : (uint)transaction.ExtraData.Length
             };
 
-            foreach (var txInput in txInputs)
-            {
-                unsignedTx.Inputs.Add(txInput);
-            }
-
-            foreach (var txOutput in txOutputs)
-            {
-                unsignedTx.Outputs.Add(txOutput);
-            }
+            CopyInputs(transaction.Inputs, unsignedTx.Inputs);
+            CopyOutputs(transaction.Outputs, unsignedTx.Outputs);
 
             txDic.Add("unsigned", unsignedTx);
 
-            foreach (var txInput in txInputs)
+            foreach (var txInput in transaction.Inputs)
             {
+                BitcoinTransaction prevTran = txInput.PrevTransaction;
                 var tx = new TransactionType
                 {
-                    Version = signTx.Version,
-                    LockTime = signTx.LockTime,
+                    Version = prevTran.Version,
+                    LockTime = prevTran.LockTime,
+                    InputsCnt = (uint)prevTran.Inputs.Count,
+                    OutputsCnt = (uint)prevTran.Outputs.Count,
                 };
+                CopyInputs(prevTran.Inputs, tx.Inputs);
+                CopyOutputs(prevTran.Outputs, tx.Outputs);
+
+                txDic.Add(txInput.PrevHash.ToHex(), tx);
             }
 
             var serializedTx = new Dictionary<uint, byte[]>();
 
-            var request = await SendMessageAsync<TxRequest, SignTx>(signTx);
+            var request = await SendMessageAsync<TxRequest, SignTx>(new SignTx
+            {
+                CoinName = transaction.CoinName,
+                Version = transaction.Version,
+                LockTime = transaction.LockTime,
+                Expiry = transaction.Expiry,
+                InputsCount = (uint)transaction.Inputs.Count,
+                OutputsCount = (uint)transaction.Outputs.Count
+            });
             TxAck txAck;
             // We do loop here since we need to send over and over the same transactions to trezor because his 64 kilobytes memory
             // and he will sign chunks and return part of signed chunk in serialized manner, until we receive finall type of Txrequest TxFinished
