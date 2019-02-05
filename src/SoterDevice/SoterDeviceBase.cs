@@ -421,6 +421,18 @@ namespace SoterDevice
             }
         }
 
+        void CopyBinOutputs(List<BitcoinTransactionOutput> from, List<TxOutputBinType> to)
+        {
+            foreach (var txOutput in from)
+            {
+                to.Add(new TxOutputBinType
+                {
+                    Amount = txOutput.Amount,
+                    ScriptPubkey = txOutput.Script,
+                });
+            }
+        }
+
         public async Task<byte[]> SignTransactionAsync(BitcoinTransaction transaction)
         {
             var txDic = new Dictionary<string, TransactionType>();
@@ -450,7 +462,7 @@ namespace SoterDevice
                     OutputsCnt = (uint)prevTran.Outputs.Count,
                 };
                 CopyInputs(prevTran.Inputs, tx.Inputs);
-                CopyOutputs(prevTran.Outputs, tx.Outputs);
+                CopyBinOutputs(prevTran.Outputs, tx.BinOutputs);
 
                 txDic.Add(txInput.PrevHash.ToHex(), tx);
             }

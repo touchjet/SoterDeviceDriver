@@ -6,6 +6,7 @@ namespace SoterDevice.Models
     public class BitcoinTransactionOutput
     {
         public string Address { get; set; }
+        public byte[] Script { get; set; }
         public uint[] AddressNs { get; set; }
         public ulong Amount { get; set; }
         public OutputScriptType ScriptType { get; set; }
