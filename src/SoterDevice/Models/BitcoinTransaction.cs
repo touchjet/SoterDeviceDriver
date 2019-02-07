@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace SoterDevice.Models
 {
@@ -22,5 +21,7 @@ namespace SoterDevice.Models
         public List<BitcoinTransactionInput> Inputs { get; }
         public List<BitcoinTransactionOutput> Outputs { get; }
         public byte[] ExtraData { get; set; }
+
+        public byte[] SerializedTx { get; set; }
     }
 }

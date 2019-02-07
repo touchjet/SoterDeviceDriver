@@ -589,7 +589,6 @@ namespace SoterDevice
                         }
                 }
             }
-            Log.Information($"Signed Tx :{JsonConvert.SerializeObject(serializedTx)}");
             return serializedTx.ToArray();
         }
 
