@@ -382,23 +382,24 @@ namespace SoterDevice
             Log.Debug(success.Message);
         }
 
-        void CopyInputs(List<BitcoinTransactionInput> from, List<TxInputType> to)
+        void CopyInputs(List<BitcoinTransactionInput> from, List<TxInputType> to, bool withSequence)
         {
             foreach (var txInput in from)
             {
-                to.Add(new TxInputType
+                var newInput = new TxInputType
                 {
                     AddressNs = txInput.AddressNs,
-                    Amount = txInput.Amount,
-                    DecredScriptVersion = txInput.DecredScriptVersion,
-                    DecredTree = txInput.DecredTree,
+                    //Amount = txInput.Amount,
+                    //DecredScriptVersion = txInput.DecredScriptVersion,
+                    //DecredTree = txInput.DecredTree,
                     Multisig = txInput.Multisig,
                     PrevHash = txInput.PrevHash,
                     PrevIndex = txInput.PrevIndex,
                     ScriptSig = txInput.ScriptSig,
                     ScriptType = txInput.ScriptType,
-                    Sequence = txInput.Sequence
-                });
+                };
+                if (withSequence) { newInput.Sequence = txInput.Sequence; }
+                to.Add(newInput);
             }
         }
 
@@ -412,7 +413,7 @@ namespace SoterDevice
                     Address = txOutput.Address,
                     Amount = txOutput.Amount,
                     AddressType = txOutput.AddressType,
-                    DecredScriptVersion = txOutput.DecredScriptVersion,
+                    //DecredScriptVersion = txOutput.DecredScriptVersion,
                     ExchangeType = txOutput.ExchangeType,
                     Multisig = txOutput.Multisig,
                     ScriptType = txOutput.ScriptType,
@@ -446,7 +447,7 @@ namespace SoterDevice
                 ExtraDataLen = transaction.ExtraData == null ? 0 : (uint)transaction.ExtraData.Length
             };
 
-            CopyInputs(transaction.Inputs, unsignedTx.Inputs);
+            CopyInputs(transaction.Inputs, unsignedTx.Inputs, false);
             CopyOutputs(transaction.Outputs, unsignedTx.Outputs);
 
             txDic.Add("unsigned", unsignedTx);
@@ -461,20 +462,17 @@ namespace SoterDevice
                     InputsCnt = (uint)prevTran.Inputs.Count,
                     OutputsCnt = (uint)prevTran.Outputs.Count,
                 };
-                CopyInputs(prevTran.Inputs, tx.Inputs);
+                CopyInputs(prevTran.Inputs, tx.Inputs, true);
                 CopyBinOutputs(prevTran.Outputs, tx.BinOutputs);
 
                 txDic.Add(txInput.PrevHash.ToHex(), tx);
             }
 
-            var serializedTx = new Dictionary<uint, byte[]>();
+            var serializedTx = new List<byte>();
 
             var request = await SendMessageAsync<TxRequest, SignTx>(new SignTx
             {
                 CoinName = transaction.CoinName,
-                Version = transaction.Version,
-                LockTime = transaction.LockTime,
-                Expiry = transaction.Expiry,
                 InputsCount = (uint)transaction.Inputs.Count,
                 OutputsCount = (uint)transaction.Outputs.Count
             });
@@ -519,7 +517,7 @@ namespace SoterDevice
                             // Now we have to check every response is there any SerializedTx chunk 
                             if (request.Serialized != null)
                             {
-                                serializedTx.Add(request.Serialized.SignatureIndex, request.Serialized.SerializedTx);
+                                serializedTx.AddRange(request.Serialized.SerializedTx);
                             }
 
                             break;
@@ -529,17 +527,11 @@ namespace SoterDevice
                             var msg = new TransactionType();
                             if ((request.Details != null) && (request.Details.TxHash != null))
                             {
-                                foreach (var binOutput in currentTx.BinOutputs)
-                                {
-                                    msg.BinOutputs.Add(binOutput);
-                                }
+                                msg.BinOutputs.Add(currentTx.BinOutputs[(int)request.Details.RequestIndex]);
                             }
                             else
                             {
-                                foreach (var output in currentTx.Outputs)
-                                {
-                                    msg.Outputs.Add(output);
-                                }
+                                msg.Outputs.Add(currentTx.Outputs[(int)request.Details.RequestIndex]);
                             }
 
                             txAck = new TxAck { Tx = msg };
@@ -549,7 +541,7 @@ namespace SoterDevice
                             // Now we have to check every response is there any SerializedTx chunk 
                             if (request.Serialized != null)
                             {
-                                serializedTx.Add(request.Serialized.SignatureIndex, request.Serialized.SerializedTx);
+                                serializedTx.AddRange(request.Serialized.SerializedTx);
                             }
 
                             break;
@@ -569,7 +561,7 @@ namespace SoterDevice
                             // Now we have to check every response is there any SerializedTx chunk 
                             if (request.Serialized != null)
                             {
-                                serializedTx.Add(request.Serialized.SignatureIndex, request.Serialized.SerializedTx);
+                                serializedTx.AddRange(request.Serialized.SerializedTx);
                             }
                             break;
                         }
@@ -581,7 +573,7 @@ namespace SoterDevice
                                 LockTime = currentTx.LockTime,
                                 InputsCnt = currentTx.InputsCnt,
                                 OutputsCnt = (request.Details != null) && (request.Details.TxHash != null) ? (uint)currentTx.BinOutputs.Count : (uint)currentTx.Outputs.Count,
-                                ExtraDataLen = currentTx.ExtraData != null ? (uint)currentTx.ExtraData.Length : 0
+                                //ExtraDataLen = currentTx.ExtraData != null ? (uint)currentTx.ExtraData.Length : 0
                             };
                             txAck = new TxAck { Tx = msg };
                             //We send TxAck() with  TxInputs
@@ -590,7 +582,7 @@ namespace SoterDevice
                             // Now we have to check every response is there any SerializedTx chunk 
                             if (request.Serialized != null)
                             {
-                                serializedTx.Add(request.Serialized.SignatureIndex, request.Serialized.SerializedTx);
+                                serializedTx.AddRange(request.Serialized.SerializedTx);
                             }
 
                             break;
@@ -598,7 +590,7 @@ namespace SoterDevice
                 }
             }
             Log.Information($"Signed Tx :{JsonConvert.SerializeObject(serializedTx)}");
-            return serializedTx.First().Value;
+            return serializedTx.ToArray();
         }
 
         public async Task<EthereumTxRequest> SignEthereumTransactionAsync(EthereumSignTx signTx)

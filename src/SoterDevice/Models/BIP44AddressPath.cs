@@ -21,15 +21,15 @@ namespace SoterDevice.Models
 {
     public class BIP44AddressPath : AddressPathBase, IBIP44AddressPath
     {
-        public uint Purpose => Validate() ? AddressPathElements[0].Value : 0;
+        public uint Purpose => Validate() ? (AddressPathElements[0].Harden? AddressUtilities.HardenNumber(AddressPathElements[0].Value): AddressPathElements[0].Value) : 0;
 
-        public uint CoinType => Validate() ? AddressPathElements[1].Value : 0;
+        public uint CoinType => Validate() ? (AddressPathElements[1].Harden ? AddressUtilities.HardenNumber(AddressPathElements[1].Value) : AddressPathElements[1].Value) : 0;
 
-        public uint Account => Validate() ? AddressPathElements[2].Value : 0;
+        public uint Account => Validate() ? (AddressPathElements[2].Harden ? AddressUtilities.HardenNumber(AddressPathElements[2].Value) : AddressPathElements[2].Value) : 0;
 
-        public uint Change => Validate() ? AddressPathElements[3].Value : 0;
+        public uint Change => Validate() ? (AddressPathElements[3].Harden ? AddressUtilities.HardenNumber(AddressPathElements[3].Value) : AddressPathElements[3].Value) : 0;
 
-        public uint AddressIndex => Validate() ? AddressPathElements[4].Value : 0;
+        public uint AddressIndex => Validate() ? (AddressPathElements[4].Harden ? AddressUtilities.HardenNumber(AddressPathElements[4].Value) : AddressPathElements[4].Value) : 0;
 
         public BIP44AddressPath()
         {
