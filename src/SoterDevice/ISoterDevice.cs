@@ -29,6 +29,7 @@ namespace SoterDevice
         ButtonRequestHandler DeviceButtonRequestCallback { get; set; }
         EnterPinHandler EnterPinCallback { get; set; }
         ICoinUtility CoinUtility { get; set; }
+        bool Connected { get; }
         string Name { get; }
         string Id { get; }
         int Mtu { get; }

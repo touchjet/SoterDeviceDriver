@@ -54,6 +54,8 @@ namespace SoterDevice
 
         protected int _invalidRxChunksCounter;
 
+        public virtual bool Connected { get => false; }
+
         public bool IsInitialized => Features != null;
 
         public Features Features { get; private set; }

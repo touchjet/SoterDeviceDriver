@@ -56,6 +56,8 @@ namespace SoterDevice.Ble
             Id = device.Id.ToString();
         }
 
+        public override bool Connected { get => _device.State == DeviceState.Connected; }
+
         int _mtu = 23;
         public override int Mtu { get { return _mtu; } }
 
